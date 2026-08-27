@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="stylesheet" href="/style.css">
+  <title>My Devices</title>
+  <style>
+    body { display: block; }
+    .page { max-width: 700px; margin: 0 auto; }
+    .device-list { margin-top: 20px; }
+    .empty-state { text-align: center; padding: 40px 20px; color: #999; }
+    .empty-state p { font-size: 15px; margin-bottom: 8px; }
+    .device-id { font-size: 11px; color: #bbb; font-family: monospace; margin-top: 2px; }
+    .control-label { font-size: 12px; color: #666; margin-bottom: 4px; font-weight: 600; }
+    .rename-input { padding: 5px 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px; width: 160px; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <a href="/devices.html">🌈 Smart Device</a>
+    <div class="navbar-right">
+      <span id="nav-email"></span>
+      <button class="btn btn-sm" style="background:rgba(255,255,255,0.2);color:white;" onclick="logout()">Logout</button>
+    </div>
+  </nav>
+
+  <div class="page" style="padding: 20px;">
+
+    <!-- Claim by code -->
+    <div class="card mt-16">
+      <div class="card-body">
+        <h2 style="font-size:16px;margin-bottom:12px;">Claim a Device by Code</h2>
+        <div style="display:flex;gap:8px;align-items:flex-end;">
+          <div class="form-group" style="flex:1;margin:0;">
+            <input type="text" id="claim-code" placeholder="e.g. ABC123" maxlength="7" style="text-transform:uppercase;">
+          </div>
+          <button class="btn btn-primary" onclick="claimDevice()">Claim</button>
+        </div>
+        <div id="claim-error"   class="alert alert-error"></div>
+        <div id="claim-success" class="alert alert-success"></div>
+      </div>
+    </div>
+
+    <!-- Register new device -->
+    <div class="provision-box mt-16">
+      <h3>📡 Register New Device</h3>
+      <p>Power on your device and connect it to WiFi first, then click below and double-press the BOOT button on the device within the countdown.</p>
+      <button class="btn btn-success" id="provision-btn" onclick="startProvision()">Start Registration (10s)</button>
+      <div class="countdown" id="provision-countdown" style="display:none"></div>
+      <div id="provision-status" class="alert mt-8"></div>
+    </div>
+
+    <!-- Device list -->
+    <h2 style="font-size:16px;margin-top:24px;margin-bottom:4px;">My Devices</h2>
+    <div id="device-list" class="device-list">
+      <div class="empty-state"><p>Loading...</p></div>
+    </div>
+
+  </div>
+
+  <script>
+    const API_URL = 'https://api.unicornextermination.info';
+    let token    = localStorage.getItem('auth_token');
+    let userEmail = localStorage.getItem('user_email');
+
+    if (!token) { window.location.href = '/'; }
+
+    document.getElementById('nav-email').textContent = userEmail || '';
+
+    // ── Helpers ────────────────────────────────────────────────────────────────
+    function authHeaders() { return { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }; }
+
+    function showAlert(id, msg, type) {
+      const el = document.getElementById(id);
+      el.textContent = msg;
+      el.className = 'alert show alert-' + type;
+    }
+    function hideAlert(id) { const el = document.getElementById(id); el.className = 'alert'; }
+
+    function logout() {
+      ['auth_token','user_id','user_email'].forEach(k => localStorage.removeItem(k));
+      window.location.href = '/';
+    }
+
+    // ── Load devices ───────────────────────────────────────────────────────────
+    async function loadDevices() {
+      try {
+        const res  = await fetch(`${API_URL}/devices/mine`, { headers: authHeaders() });
+        if (res.status === 401) { logout(); return; }
+        const data = await res.json();
+        renderDevices(data.devices || []);
+      } catch (err) {
+        document.getElementById('device-list').innerHTML =
+          `<div class="empty-state"><p>Failed to load devices: ${err.message}</p></div>`;
+      }
+    }
+
+    const COLORS = [
+      { name: 'off',    hex: '#333333' },
+      { name: 'red',    hex: '#f44336' },
+      { name: 'green',  hex: '#4caf50' },
+      { name: 'blue',   hex: '#2196f3' },
+      { name: 'white',  hex: '#f5f5f5' },
+      { name: 'yellow', hex: '#ffeb3b' },
+      { name: 'cyan',   hex: '#00bcd4' },
+      { name: 'purple', hex: '#9c27b0' },
+    ];
+
+    function renderDevices(devices) {
+      const list = document.getElementById('device-list');
+      if (!devices.length) {
+        list.innerHTML = '<div class="empty-state"><p>No devices yet.</p><p>Claim one using the code from your device\'s setup page, or use Register above.</p></div>';
+        return;
+      }
+      list.innerHTML = devices.map(d => `
+        <div class="device-card" id="dc-${d.id}">
+          <div class="device-card-header">
+            <div>
+              <div class="device-name" id="name-${d.id}">${escHtml(d.name)}</div>
+              <div class="device-id">${escHtml(d.id)}</div>
+            </div>
+            <span class="badge ${d.online ? 'badge-online' : 'badge-offline'}">${d.online ? '● Online' : '○ Offline'}</span>
+          </div>
+
+          <!-- Rename -->
+          <div style="display:flex;gap:6px;align-items:center;margin-bottom:12px;">
+            <input class="rename-input" id="rename-${d.id}" value="${escHtml(d.name)}" placeholder="Device name">
+            <button class="btn btn-sm btn-primary" onclick="renameDevice('${d.id}')">Rename</button>
+          </div>
+
+          <!-- Light -->
+          <div class="control-label">💡 Light — <span id="light-${d.id}">${d.light}</span></div>
+          <div class="device-controls">
+            <button class="btn btn-sm btn-primary"  onclick="sendCmd('${d.id}','light/on',  'light-${d.id}','on')">On</button>
+            <button class="btn btn-sm btn-danger"   onclick="sendCmd('${d.id}','light/off', 'light-${d.id}','off')">Off</button>
+          </div>
+
+          <!-- Motor -->
+          <div class="control-label mt-8">⚙️ Motor — <span id="motor-${d.id}">${d.motor}</span></div>
+          <div class="device-controls">
+            <button class="btn btn-sm btn-primary"  onclick="sendCmd('${d.id}','motor/run',  'motor-${d.id}','running')">Run</button>
+            <button class="btn btn-sm btn-danger"   onclick="sendCmd('${d.id}','motor/stop', 'motor-${d.id}','stopped')">Stop</button>
+          </div>
+
+          <!-- RGB -->
+          <div class="control-label mt-8">🌈 RGB — <span id="rgb-${d.id}">${d.rgb}</span></div>
+          <div class="color-row">
+            ${COLORS.map(c => `<div class="swatch ${d.rgb===c.name?'active':''}" style="background:${c.hex};" title="${c.name}" onclick="setColor('${d.id}','${c.name}')"></div>`).join('')}
+          </div>
+
+          <div id="cmd-status-${d.id}" class="alert mt-8"></div>
+        </div>
+      `).join('');
+    }
+
+    function escHtml(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    // ── Commands ───────────────────────────────────────────────────────────────
+    async function sendCmd(deviceId, endpoint, statusSpanId, expectedVal) {
+      const statusEl = document.getElementById('cmd-status-' + deviceId);
+      statusEl.className = 'alert';
+      try {
+        const res  = await fetch(`${API_URL}/devices/${deviceId}/${endpoint}`, { method: 'POST', headers: authHeaders() });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Command failed');
+        const spanEl = document.getElementById(statusSpanId);
+        if (spanEl) spanEl.textContent = expectedVal;
+        statusEl.textContent = '✓ Done';
+        statusEl.className = 'alert show alert-success';
+        setTimeout(() => statusEl.className = 'alert', 2000);
+      } catch (err) {
+        statusEl.textContent = '✗ ' + err.message;
+        statusEl.className = 'alert show alert-error';
+      }
+    }
+
+    async function setColor(deviceId, color) {
+      // Update active swatch visually
+      document.querySelectorAll(`#dc-${deviceId} .swatch`).forEach(s => s.classList.remove('active'));
+      const clicked = [...document.querySelectorAll(`#dc-${deviceId} .swatch`)].find(s => s.title === color);
+      if (clicked) clicked.classList.add('active');
+
+      const statusEl = document.getElementById('cmd-status-' + deviceId);
+      try {
+        const res  = await fetch(`${API_URL}/devices/${deviceId}/rgb`, {
+          method: 'POST', headers: authHeaders(), body: JSON.stringify({ color })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Command failed');
+        const rgbEl = document.getElementById('rgb-' + deviceId);
+        if (rgbEl) rgbEl.textContent = color;
+        statusEl.textContent = '✓ Color set to ' + color;
+        statusEl.className = 'alert show alert-success';
+        setTimeout(() => statusEl.className = 'alert', 2000);
+      } catch (err) {
+        statusEl.textContent = '✗ ' + err.message;
+        statusEl.className = 'alert show alert-error';
+      }
+    }
+
+    async function renameDevice(deviceId) {
+      const input = document.getElementById('rename-' + deviceId);
+      const name = input.value.trim();
+      if (!name) return;
+      try {
+        const res  = await fetch(`${API_URL}/devices/${deviceId}/name`, {
+          method: 'PATCH', headers: authHeaders(), body: JSON.stringify({ name })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Rename failed');
+        document.getElementById('name-' + deviceId).textContent = name;
+        const statusEl = document.getElementById('cmd-status-' + deviceId);
+        statusEl.textContent = '✓ Renamed';
+        statusEl.className = 'alert show alert-success';
+        setTimeout(() => statusEl.className = 'alert', 2000);
+      } catch (err) {
+        const statusEl = document.getElementById('cmd-status-' + deviceId);
+        statusEl.textContent = '✗ ' + err.message;
+        statusEl.className = 'alert show alert-error';
+      }
+    }
+
+    // ── Claim ──────────────────────────────────────────────────────────────────
+    async function claimDevice() {
+      hideAlert('claim-error'); hideAlert('claim-success');
+      const code = document.getElementById('claim-code').value.replace(/-/g,'').toUpperCase().trim();
+      if (!code) { showAlert('claim-error', 'Enter a claim code', 'error'); return; }
+      try {
+        const res  = await fetch(`${API_URL}/devices/claim`, {
+          method: 'POST', headers: authHeaders(), body: JSON.stringify({ claim_code: code })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Claim failed');
+        showAlert('claim-success', '✓ Device claimed! Loading...', 'success');
+        document.getElementById('claim-code').value = '';
+        setTimeout(() => loadDevices(), 1000);
+      } catch (err) { showAlert('claim-error', err.message, 'error'); }
+    }
+
+    // ── Provision ──────────────────────────────────────────────────────────────
+    let provisionTimer = null, provisionPollTimer = null, provisionSessionId = null;
+
+    async function startProvision() {
+      const btn       = document.getElementById('provision-btn');
+      const countdown = document.getElementById('provision-countdown');
+      const status    = document.getElementById('provision-status');
+
+      status.className = 'alert'; countdown.style.display = 'block'; btn.disabled = true;
+
+      try {
+        const res  = await fetch(`${API_URL}/provision/start`, {
+          method: 'POST', headers: authHeaders(), body: JSON.stringify({ ttl: 10 })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Failed to start session');
+
+        provisionSessionId = data.session_id;
+        let remaining = data.ttl_seconds;
+        countdown.textContent = remaining;
+        status.textContent = '⏳ Waiting… double-press BOOT on your device now!';
+        status.className = 'alert show alert-warning';
+
+        provisionTimer = setInterval(() => {
+          remaining--;
+          countdown.textContent = remaining;
+          if (remaining <= 0) {
+            clearInterval(provisionTimer);
+            clearInterval(provisionPollTimer);
+            countdown.style.display = 'none'; btn.disabled = false;
+            if (status.className.includes('warning')) {
+              status.textContent = '⏰ Time expired — device did not respond. Try again.';
+              status.className = 'alert show alert-error';
+            }
+          }
+        }, 1000);
+
+        provisionPollTimer = setInterval(async () => {
+          try {
+            const pollRes  = await fetch(`${API_URL}/provision/status/${provisionSessionId}`, { headers: authHeaders() });
+            if (!pollRes.ok) return;
+            const pollData = await pollRes.json();
+            if (pollData.status === 'claimed') {
+              clearInterval(provisionTimer); clearInterval(provisionPollTimer);
+              countdown.style.display = 'none'; btn.disabled = false;
+              status.textContent = `✅ Device registered: ${pollData.claimed_device_id}`;
+              status.className = 'alert show alert-success';
+              setTimeout(() => loadDevices(), 1000);
+            }
+          } catch (_) {}
+        }, 1500);
+
+      } catch (err) {
+        countdown.style.display = 'none'; btn.disabled = false;
+        status.textContent = '❌ ' + err.message;
+        status.className = 'alert show alert-error';
+      }
+    }
+
+    // ── Auto-refresh every 10s ─────────────────────────────────────────────────
+    loadDevices();
+    setInterval(loadDevices, 10000);
+  </script>
+</body>
+</html>
