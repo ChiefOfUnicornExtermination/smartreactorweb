@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="stylesheet" href="/style.css">
+  <title>Cart — Smart Device</title>
+</head>
+<body class="store-page">
+  <header class="store-header"><a class="store-brand" href="/shop.html">SMART DEVICE</a><nav class="store-nav"><a href="/shop.html">Shop</a><a href="/devices.html">My Devices</a></nav><div class="store-actions"><a href="/cart.html" class="cart-link active">Cart <span id="cart-count">0</span></a><a href="/" class="account-link">Account</a></div></header>
+  <main class="store-section narrow-section">
+    <div class="section-heading"><div><p class="eyebrow">YOUR ORDER</p><h1>Shopping cart</h1></div><a href="/shop.html" class="back-link">Continue shopping →</a></div>
+    <div id="cart-content"></div>
+  </main>
+  <script>
+    const API_URL = 'https://api.unicornextermination.info';
+    const esc = value => String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    function renderCart() {
+      const cart = JSON.parse(localStorage.getItem('shopping_cart') || '[]');
+      document.getElementById('cart-count').textContent = cart.reduce((total, item) => total + item.quantity, 0);
+      if (!cart.length) { document.getElementById('cart-content').innerHTML = '<div class="empty-store"><h2>Your cart is empty</h2><p>Browse the collection to find your next smart device.</p><a class="store-button dark" href="/shop.html">Shop products</a></div>'; return; }
+      const subtotal = cart.reduce((total, item) => total + item.price * item.quantity, 0);
+      document.getElementById('cart-content').innerHTML = `<div class="cart-layout"><div class="cart-items">${cart.map((item, index) => `<article class="cart-item"><img src="${esc(item.image_url || '/websiteimage.png')}" alt="${esc(item.name)}"><div class="cart-item-copy"><h2>${esc(item.name)}</h2><p>$${item.price.toFixed(2)}</p><label>Quantity <input type="number" min="1" value="${item.quantity}" onchange="changeQuantity(${index}, this.value)"></label></div><strong>$${(item.price * item.quantity).toFixed(2)}</strong><button class="remove-button" onclick="removeItem(${index})">Remove</button></article>`).join('')}</div><aside class="order-summary"><h2>Order summary</h2><div><span>Subtotal</span><strong>$${subtotal.toFixed(2)}</strong></div><div><span>Shipping</span><span>Calculated at checkout</span></div><div class="summary-total"><span>Total</span><strong>$${subtotal.toFixed(2)}</strong></div><a class="store-button dark full-width" href="/checkout.html">Proceed to checkout</a></aside></div>`;
+    }
+    function changeQuantity(index, value) { const cart = JSON.parse(localStorage.getItem('shopping_cart') || '[]'); cart[index].quantity = Math.max(1, Number(value) || 1); localStorage.setItem('shopping_cart', JSON.stringify(cart)); renderCart(); }
+    function removeItem(index) { const cart = JSON.parse(localStorage.getItem('shopping_cart') || '[]'); cart.splice(index, 1); localStorage.setItem('shopping_cart', JSON.stringify(cart)); renderCart(); }
+    renderCart();
+  </script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="stylesheet" href="/style.css">
+  <title>Order confirmed — Smart Device</title>
+</head>
+<body class="store-page">
+  <header class="store-header"><a class="store-brand" href="/shop.html">SMART DEVICE</a><nav class="store-nav"><a href="/shop.html">Shop</a><a href="/devices.html">My Devices</a></nav><div class="store-actions"><a href="/cart.html" class="cart-link">Cart <span>0</span></a><a href="/" class="account-link">Account</a></div></header>
+  <main class="success-page"><p class="eyebrow">ORDER CONFIRMED</p><h1>Thank you for your purchase.</h1><p>Your order has been received. We’ll send delivery updates to your email address.</p><p class="order-number" id="order-number"></p><a class="store-button dark" href="/shop.html">Continue shopping</a></main>
+  <script>const id = new URLSearchParams(location.search).get('order_id'); if (id) document.getElementById('order-number').textContent = 'Order number: ' + id;</script>
+</body>
+</html>

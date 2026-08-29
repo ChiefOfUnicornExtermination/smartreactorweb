@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="stylesheet" href="/style.css">
+  <title>Product — Smart Device</title>
+</head>
+<body class="store-page">
+  <header class="store-header">
+    <a class="store-brand" href="/shop.html">SMART DEVICE</a>
+    <nav class="store-nav" aria-label="Main navigation">
+      <a href="/shop.html" class="active">Shop</a>
+      <a href="/devices.html">My Devices</a>
+      <a href="/#about">About</a>
+      <a href="/#contact">Contact</a>
+    </nav>
+    <div class="store-actions"><a href="/cart.html" class="cart-link">Cart <span id="cart-count">0</span></a><a href="/" class="account-link">Account</a></div>
+  </header>
+  <main class="store-section product-detail" id="product-detail"><p class="store-status">Loading product...</p></main>
+  <script>
+    const API_URL = 'https://api.unicornextermination.info';
+    const productId = new URLSearchParams(location.search).get('id');
+    const headers = localStorage.getItem('auth_token') ? { Authorization: 'Bearer ' + localStorage.getItem('auth_token') } : {};
+    let loadedProduct = null;
+    const esc = value => String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    function updateCartCount() {
+      const cart = JSON.parse(localStorage.getItem('shopping_cart') || '[]');
+      document.getElementById('cart-count').textContent = cart.reduce((total, item) => total + item.quantity, 0);
+    }
+    async function loadProduct() {
+      try {
+        const response = await fetch(`${API_URL}/store/products/${encodeURIComponent(productId)}`, { headers });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || 'Unable to load product');
+        const product = data.product;
+        loadedProduct = product;
+        document.title = `${product.name} — Smart Device`;
+        document.getElementById('product-detail').innerHTML = `
+          <a href="/shop.html" class="back-link">← Back to shop</a>
+          <div class="product-detail-grid">
+            <img src="${esc(product.image_url || '/websiteimage.png')}" alt="${esc(product.name)}" class="detail-image">
+            <div class="detail-copy">
+              <p class="eyebrow">SMART DEVICE</p>
+              <h1>${esc(product.name)}</h1>
+              <p class="detail-price">$${Number(product.price).toFixed(2)}</p>
+              <p class="detail-description">${esc(product.description || '')}</p>
+              <p class="stock-message">${product.stock_quantity > 0 ? 'In stock and ready to ship.' : 'Currently unavailable.'}</p>
+              <div class="quantity-control"><label for="quantity">Quantity</label><input id="quantity" type="number" min="1" max="${Math.max(1, product.stock_quantity || 1)}" value="1"></div>
+              <button class="store-button dark" ${product.stock_quantity <= 0 ? 'disabled' : ''} onclick="addToCart()">Add to cart</button>
+            </div>
+          </div>`;
+      } catch (error) { document.getElementById('product-detail').innerHTML = `<p class="store-status error">${esc(error.message)}</p>`; }
+    }
+    function addToCart() {
+      const product = loadedProduct;
+      if (!product) return;
+      const quantity = Number(document.getElementById('quantity').value);
+      const cart = JSON.parse(localStorage.getItem('shopping_cart') || '[]');
+      const existing = cart.find(item => String(item.product_id) === String(product.id));
+      if (existing) existing.quantity += quantity;
+      else cart.push({ product_id: product.id, name: product.name, price: Number(product.price), image_url: product.image_url || '/websiteimage.png', quantity });
+      localStorage.setItem('shopping_cart', JSON.stringify(cart)); updateCartCount(); location.href = '/cart.html';
+    }
+    updateCartCount(); loadProduct();
+  </script>
+</body>
+</html>
