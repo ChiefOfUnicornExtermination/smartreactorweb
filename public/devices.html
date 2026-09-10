@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
-  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/styles/style.css">
   <title>My Devices</title>
   <style>
     body { display: block; }
@@ -19,49 +19,57 @@
 </head>
 <body>
   <nav class="navbar">
-    <a href="/devices.html">🌈 Smart Device</a>
+    <a href="/devices.html">Smart Device</a>
     <div class="navbar-right">
+      <a href="/shop.html" style="color:white;text-decoration:none;" data-i18n="shop_nav_shop">Shop</a>
+      <select id="lang-select" aria-label="Language" style="padding:5px 8px;border:none;border-radius:4px;">
+        <option value="en">English</option>
+        <option value="ja">日本語</option>
+        <option value="es">Español</option>
+        <option value="fr">Français</option>
+        <option value="de">Deutsch</option>
+        <option value="zh-TW">繁體中文</option>
+        <option value="ko">한국어</option>
+      </select>
       <span id="nav-email"></span>
-      <button class="btn btn-sm" style="background:rgba(255,255,255,0.2);color:white;" onclick="logout()">Logout</button>
+      <button class="btn btn-sm" style="background:rgba(255,255,255,0.2);color:white;" onclick="logout()" data-i18n="logout_btn">Logout</button>
     </div>
   </nav>
 
   <div class="page" style="padding: 20px;">
 
-    <!-- Claim by code -->
     <div class="card mt-16">
       <div class="card-body">
-        <h2 style="font-size:16px;margin-bottom:12px;">Claim a Device by Code</h2>
+        <h2 style="font-size:16px;margin-bottom:12px;" data-i18n="device_claim_title">Claim a Device by Code</h2>
         <div style="display:flex;gap:8px;align-items:flex-end;">
           <div class="form-group" style="flex:1;margin:0;">
             <input type="text" id="claim-code" placeholder="e.g. ABC123" maxlength="7" style="text-transform:uppercase;">
           </div>
-          <button class="btn btn-primary" onclick="claimDevice()">Claim</button>
+          <button class="btn btn-primary" onclick="claimDevice()" data-i18n="device_claim_button">Claim</button>
         </div>
         <div id="claim-error"   class="alert alert-error"></div>
         <div id="claim-success" class="alert alert-success"></div>
       </div>
     </div>
 
-    <!-- Register new device -->
     <div class="provision-box mt-16">
-      <h3>📡 Register New Device</h3>
-      <p>Power on your device and connect it to WiFi first, then click below and double-press the BOOT button on the device within the countdown.</p>
-      <button class="btn btn-success" id="provision-btn" onclick="startProvision()">Start Registration (10s)</button>
+      <h3 data-i18n="device_register_title">📡 Register New Device</h3>
+      <p data-i18n="device_register_desc">Power on your device and connect it to WiFi first, then click below and double-press the BOOT button on the device within the countdown.</p>
+      <button class="btn btn-success" id="provision-btn" onclick="startProvision()" data-i18n="device_register_button">Start Registration (10s)</button>
       <div class="countdown" id="provision-countdown" style="display:none"></div>
       <div id="provision-status" class="alert mt-8"></div>
     </div>
 
-    <!-- Device list -->
-    <h2 style="font-size:16px;margin-top:24px;margin-bottom:4px;">My Devices</h2>
+    <h2 style="font-size:16px;margin-top:24px;margin-bottom:4px;" data-i18n="device_my_devices">My Devices</h2>
     <div id="device-list" class="device-list">
-      <div class="empty-state"><p>Loading...</p></div>
+      <div class="empty-state"><p data-i18n="device_loading">Loading...</p></div>
     </div>
 
   </div>
 
   <script>
     const API_URL = 'https://api.unicornextermination.info';
+    const ui = (key) => window.i18n ? window.i18n.t(key) : key;
     let token    = localStorage.getItem('auth_token');
     let userEmail = localStorage.getItem('user_email');
 

@@ -1,2 +1,0 @@
-# smartreactordevice
-デバイスです
