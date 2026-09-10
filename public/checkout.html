@@ -4,37 +4,47 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
-  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/styles/style.css">
   <title>Checkout — Smart Device</title>
 </head>
 <body class="store-page">
-  <header class="store-header"><a class="store-brand" href="/shop.html">SMART DEVICE</a><nav class="store-nav"><a href="/shop.html">Shop</a><a href="/devices.html">My Devices</a></nav><div class="store-actions"><a href="/cart.html" class="cart-link">Cart <span id="cart-count">0</span></a><a href="/" class="account-link">Account</a></div></header>
+  <header class="store-header"><a class="store-brand" href="/shop.html">SMART DEVICE</a><nav class="store-nav"><a href="/shop.html" data-i18n="shop_nav_shop">Shop</a><a href="/devices.html" data-i18n="shop_nav_my_devices">My Devices</a></nav><div class="store-actions"><select id="lang-select" aria-label="Language" style="padding:6px 8px;border:1px solid #d8d8d8;background:#fff;"><option value="en">English</option><option value="ja">日本語</option><option value="es">Español</option><option value="fr">Français</option><option value="de">Deutsch</option><option value="zh-TW">繁體中文</option><option value="ko">한국어</option></select><a href="/cart.html" class="cart-link"><span data-i18n="shop_cart">Cart</span> <span id="cart-count">0</span></a><a href="/" class="account-link" data-i18n="shop_nav_account">Account</a></div></header>
   <main class="store-section narrow-section">
-    <div class="section-heading"><div><p class="eyebrow">SECURE CHECKOUT</p><h1>Complete your order</h1></div></div>
+    <div class="section-heading"><div><p class="eyebrow" data-i18n="checkout_secure">SECURE CHECKOUT</p><h1 data-i18n="checkout_title">Complete your order</h1></div></div>
     <form id="checkout-form" class="checkout-layout">
       <div class="checkout-form">
-        <h2>Contact and shipping</h2>
-        <div class="form-grid"><label>Email<input type="email" name="email" required autocomplete="email"></label><label>Full name<input name="name" required autocomplete="name"></label><label class="wide">Address<input name="address" required autocomplete="street-address"></label><label>City<input name="city" required autocomplete="address-level2"></label><label>Postal code<input name="postal_code" required autocomplete="postal-code"></label><label>Country<select name="country" required><option value="">Select country</option><option>United States</option><option>Japan</option><option>Canada</option><option>United Kingdom</option></select></label></div>
-        <h2>Payment</h2>
-        <div class="form-grid"><label class="wide">Card number<input name="card_number" inputmode="numeric" autocomplete="cc-number" placeholder="Card number" required></label><label>Expiry date<input name="expiry" autocomplete="cc-exp" placeholder="MM / YY" required></label><label>Security code<input name="cvc" inputmode="numeric" autocomplete="cc-csc" required></label></div>
-        <p class="form-note">Payment details are sent to the configured checkout endpoint and are not stored by this page.</p><div id="checkout-error" class="store-status error"></div>
+        <h2 data-i18n="checkout_contact_title">Contact and shipping</h2>
+        <div class="form-grid"><label data-i18n="checkout_email">Email<input type="email" name="email" required autocomplete="email"></label><label data-i18n="checkout_full_name">Full name<input name="name" required autocomplete="name"></label><label class="wide" data-i18n="checkout_address">Address<input name="address" required autocomplete="street-address"></label><label data-i18n="checkout_city">City<input name="city" required autocomplete="address-level2"></label><label data-i18n="checkout_postal">Postal code<input name="postal_code" required autocomplete="postal-code"></label><label data-i18n="checkout_country">Country<select name="country" required><option value="">Select country</option><option>United States</option><option>Japan</option><option>Canada</option><option>United Kingdom</option></select></label></div>
+        <h2 data-i18n="checkout_payment_title">Payment</h2>
+        <div class="form-grid"><label class="wide" data-i18n="checkout_card_number">Card number<input name="card_number" inputmode="numeric" autocomplete="cc-number" placeholder="Card number" required></label><label data-i18n="checkout_expiry">Expiry date<input name="expiry" autocomplete="cc-exp" placeholder="MM / YY" required></label><label data-i18n="checkout_cvc">Security code<input name="cvc" inputmode="numeric" autocomplete="cc-csc" required></label></div>
+        <p class="form-note" data-i18n="checkout_note">Payment details are sent to the configured checkout endpoint and are not stored by this page.</p><div id="checkout-error" class="store-status error"></div>
       </div>
       <aside id="checkout-summary" class="order-summary"></aside>
     </form>
   </main>
   <script>
     const API_URL = 'https://api.unicornextermination.info';
+    const ui = (key) => window.i18n ? window.i18n.t(key) : key;
     const cart = JSON.parse(localStorage.getItem('shopping_cart') || '[]');
     const token = localStorage.getItem('auth_token');
     const subtotal = cart.reduce((total, item) => total + item.price * item.quantity, 0);
     document.getElementById('cart-count').textContent = cart.reduce((total, item) => total + item.quantity, 0);
     if (!cart.length) location.replace('/cart.html');
-    document.getElementById('checkout-summary').innerHTML = `<h2>Order summary</h2>${cart.map(item => `<div><span>${item.name} × ${item.quantity}</span><strong>$${(item.price * item.quantity).toFixed(2)}</strong></div>`).join('')}<div class="summary-total"><span>Total</span><strong>$${subtotal.toFixed(2)}</strong></div><button class="store-button dark full-width" type="submit">Place order</button>`;
+    function renderSummary() {
+      document.getElementById('checkout-summary').innerHTML = `<h2>${ui('checkout_order_summary')}</h2>${cart.map(item => `<div><span>${item.name} × ${item.quantity}</span><strong>$${(item.price * item.quantity).toFixed(2)}</strong></div>`).join('')}<div class="summary-total"><span>${ui('cart_total')}</span><strong>$${subtotal.toFixed(2)}</strong></div><button class="store-button dark full-width" type="submit">${ui('checkout_place_order')}</button>`;
+      const countrySelect = document.querySelector('select[name="country"]');
+      if (countrySelect) {
+        countrySelect.innerHTML = `<option value="">${ui('checkout_select_country')}</option><option>${ui('checkout_country_us')}</option><option>${ui('checkout_country_jp')}</option><option>${ui('checkout_country_ca')}</option><option>${ui('checkout_country_uk')}</option>`;
+      }
+    }
+    renderSummary();
     document.getElementById('checkout-form').addEventListener('submit', async event => {
       event.preventDefault(); const error = document.getElementById('checkout-error'); error.textContent = '';
       const form = new FormData(event.target); const payload = { customer: { email: form.get('email'), name: form.get('name') }, shipping_address: { address: form.get('address'), city: form.get('city'), postal_code: form.get('postal_code'), country: form.get('country') }, payment: { card_number: form.get('card_number'), expiry: form.get('expiry'), cvc: form.get('cvc') }, items: cart.map(item => ({ product_id: item.product_id, quantity: item.quantity })) };
       try { const response = await fetch(`${API_URL}/store/orders`, { method: 'POST', headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: 'Bearer ' + token } : {}) }, body: JSON.stringify(payload) }); const data = await response.json(); if (!response.ok) throw new Error(data.error || 'Unable to place order'); localStorage.removeItem('shopping_cart'); location.href = `/purchase-success.html?order_id=${encodeURIComponent(data.order_id)}`; } catch (requestError) { error.textContent = requestError.message; }
     });
+    window.__i18nOnLanguageChange = renderSummary;
   </script>
+  <script src="/scripts/i18n.js"></script>
 </body>
 </html>
