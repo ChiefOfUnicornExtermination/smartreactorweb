@@ -11,10 +11,10 @@
   <header class="store-header">
     <a class="store-brand" href="/shop.html">SMART DEVICE</a>
     <nav class="store-nav" aria-label="Main navigation">
-      <a href="/shop.html" class="active" data-i18n="shop_nav_shop">Shop</a>
-      <a href="/devices.html" data-i18n="shop_nav_my_devices">My Devices</a>
-      <a href="/#about" data-i18n="shop_nav_about">About</a>
-      <a href="/#contact" data-i18n="shop_nav_contact">Contact</a>
+      <a href="/shop.html" data-i18n="shop_nav_shop">Shop</a>
+      <a href="/about.html" data-i18n="shop_nav_about">About</a>
+      <a href="/contact.html" data-i18n="shop_nav_contact">Contact</a>
+      <a id="devices-nav-link" href="/devices.html" data-i18n="shop_nav_my_devices" style="display:none;">My Devices</a>
     </nav>
     <div class="store-actions">
       <select id="lang-select" aria-label="Language" style="padding:6px 8px;border:1px solid #d8d8d8;background:#fff;">
@@ -26,8 +26,10 @@
         <option value="zh-TW">繁體中文</option>
         <option value="ko">한국어</option>
       </select>
-      <a href="/cart.html" class="cart-link"><span data-i18n="shop_cart">Cart</span> <span id="cart-count">0</span></a>
-      <a href="/" class="account-link" data-i18n="shop_nav_account">Account</a>
+      <span id="user-welcome" data-i18n="welcome_text" style="display:none;">Welcome!</span>
+      <button id="toggle-auth-tab" data-i18n="login_tab" style="background:none;border:none;cursor:pointer;color:#17202a;font-weight:600;">Login</button>
+      <button id="logout-btn" data-i18n="logout_btn" style="display:none;background:none;border:none;cursor:pointer;color:#17202a;font-weight:600;">Logout</button>
+      <a id="cart-nav-link" href="/cart.html" class="cart-link" style="display:none;"><span data-i18n="shop_cart">Cart</span> <span id="cart-count">0</span></a>
     </div>
   </header>
 
@@ -63,14 +65,11 @@
   </main>
 
   <script>
-    const API_URL = 'https://api.unicornextermination.info';
+    const API_URL = ['localhost', '127.0.0.1'].includes(window.location.hostname)
+      ? 'http://localhost:8081'
+      : 'https://api.unicornextermination.info';
     let products = [];
     const ui = (key) => window.i18n ? window.i18n.t(key) : key;
-
-    function authHeaders() {
-      const token = localStorage.getItem('auth_token');
-      return token ? { Authorization: 'Bearer ' + token } : {};
-    }
 
     function updateCartCount() {
       const cart = JSON.parse(localStorage.getItem('shopping_cart') || '[]');
@@ -120,7 +119,9 @@
 
     async function loadProducts() {
       try {
-        const response = await fetch(`${API_URL}/store/products`, { headers: authHeaders() });
+        const token = localStorage.getItem('auth_token');
+        const fetchOptions = token ? { headers: { Authorization: 'Bearer ' + token } } : {};
+        const response = await fetch(`${API_URL}/store/products`, fetchOptions);
         const data = await response.json();
         if (!response.ok) throw new Error(data.error || 'Unable to load products');
         products = data.products || [];
@@ -159,5 +160,6 @@
     loadProducts();
   </script>
   <script src="/scripts/i18n.js"></script>
+  <script src="/scripts/header-manager.js"></script>
 </body>
 </html>

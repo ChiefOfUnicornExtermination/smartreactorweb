@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="stylesheet" href="/styles/style.css">
+  <title>About — Smart Device</title>
+  <style>
+    .about-hero { min-height: 400px; padding: 80px 6vw; background: #ebe8e2; display: flex; align-items: center; }
+    .about-hero h1 { font-family: Georgia, "Times New Roman", serif; font-size: clamp(42px, 5vw, 72px); font-weight: 400; line-height: 1.06; margin-bottom: 24px; max-width: 620px; }
+    .about-hero p { max-width: 430px; color: #4e5558; line-height: 1.7; margin-bottom: 30px; }
+    .about-section { max-width: 1280px; margin: 0 auto; padding: 72px 6vw; }
+    .about-section h2 { font-family: Georgia, "Times New Roman", serif; font-size: 38px; font-weight: 400; margin-bottom: 24px; }
+    .about-section p { color: #596164; line-height: 1.7; margin-bottom: 16px; max-width: 800px; }
+    .about-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; margin-top: 40px; }
+    .about-card { text-align: center; }
+    .about-card h3 { font-size: 20px; font-weight: 600; margin-bottom: 12px; color: #17202a; }
+    .about-card p { color: #596164; line-height: 1.6; font-size: 14px; }
+    @media (max-width: 800px) {
+      .about-grid { grid-template-columns: 1fr; gap: 30px; }
+      .about-hero { padding: 60px 6vw; }
+      .about-section { padding: 50px 6vw; }
+    }
+  </style>
+</head>
+<body class="store-page">
+  <header class="store-header">
+    <a class="store-brand" href="/shop.html">SMART DEVICE</a>
+    <nav class="store-nav" aria-label="Main navigation">
+      <a href="/shop.html" data-i18n="shop_nav_shop">Shop</a>
+      <a href="/about.html" data-i18n="shop_nav_about">About</a>
+      <a href="/contact.html" data-i18n="shop_nav_contact">Contact</a>
+      <a id="devices-nav-link" href="/devices.html" data-i18n="shop_nav_my_devices" style="display:none;">My Devices</a>
+    </nav>
+    <div class="store-actions">
+      <select id="lang-select" aria-label="Language" style="padding:6px 8px;border:1px solid #d8d8d8;background:#fff;">
+        <option value="en">English</option>
+        <option value="ja">日本語</option>
+        <option value="es">Español</option>
+        <option value="fr">Français</option>
+        <option value="de">Deutsch</option>
+        <option value="zh-TW">繁體中文</option>
+        <option value="ko">한국어</option>
+      </select>
+      <span id="user-welcome" data-i18n="welcome_text" style="display:none;">Welcome!</span>
+      <button id="toggle-auth-tab" data-i18n="login_tab" style="background:none;border:none;cursor:pointer;color:#17202a;font-weight:600;">Login</button>
+      <button id="logout-btn" data-i18n="logout_btn" style="display:none;background:none;border:none;cursor:pointer;color:#17202a;font-weight:600;">Logout</button>
+      <a id="cart-nav-link" href="/cart.html" class="cart-link" style="display:none;"><span data-i18n="shop_cart">Cart</span> <span id="cart-count">0</span></a>
+    </div>
+  </header>
+
+  <section class="about-hero">
+    <div>
+      <h1>About Smart Device</h1>
+      <p>We believe that technology should simplify your life, not complicate it. Smart Device creates beautiful, intuitive hardware designed to bring calm and connection to your home.</p>
+    </div>
+  </section>
+
+  <main>
+    <section class="about-section">
+      <h2>Our Mission</h2>
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+      <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+    </section>
+
+    <section class="about-section" style="background: #f7f6f2; margin: 0 calc(-6vw); padding: 72px 6vw;">
+      <h2>Why Choose Smart Device</h2>
+      <div class="about-grid">
+        <div class="about-card">
+          <h3>Reliable</h3>
+          <p>Built to last with quality materials and rigorous testing standards.</p>
+        </div>
+        <div class="about-card">
+          <h3>Simple</h3>
+          <p>Intuitive design that works beautifully with your everyday routines.</p>
+        </div>
+        <div class="about-card">
+          <h3>Connected</h3>
+          <p>Seamless integration with your devices and smart home ecosystem.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="about-section">
+      <h2>Our Story</h2>
+      <p>Founded in 2020, Smart Device began with a simple question: what if smart home technology was actually simple? We set out to create products that anyone could understand and use, without needing a manual or tech support.</p>
+      <p>Today, thousands of households trust Smart Device to bring intelligence, security, and peace of mind to their homes. We're committed to continuous innovation and customer satisfaction.</p>
+    </section>
+  </main>
+
+  <script src="/scripts/i18n.js"></script>
+  <script src="/scripts/header-manager.js"></script>
+</body>
+</html>

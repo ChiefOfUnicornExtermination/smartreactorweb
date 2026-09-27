@@ -13,5 +13,5 @@ app.get('*', (req, res) => {
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`\n--- Smart Device Web UI ---`);
-  console.log(`🌐 Serving static files on port ${PORT}`);
+  console.log(`🌐 Serving on port ${PORT}`);
 });

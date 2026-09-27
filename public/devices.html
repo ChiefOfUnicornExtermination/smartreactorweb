@@ -5,70 +5,83 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <link rel="stylesheet" href="/styles/style.css">
+  <link rel="stylesheet" href="/styles/devices.css">
   <title>My Devices</title>
-  <style>
-    body { display: block; }
-    .page { max-width: 700px; margin: 0 auto; }
-    .device-list { margin-top: 20px; }
-    .empty-state { text-align: center; padding: 40px 20px; color: #999; }
-    .empty-state p { font-size: 15px; margin-bottom: 8px; }
-    .device-id { font-size: 11px; color: #bbb; font-family: monospace; margin-top: 2px; }
-    .control-label { font-size: 12px; color: #666; margin-bottom: 4px; font-weight: 600; }
-    .rename-input { padding: 5px 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px; width: 160px; }
-  </style>
 </head>
-<body>
-  <nav class="navbar">
-    <a href="/devices.html">Smart Device</a>
-    <div class="navbar-right">
-      <a href="/shop.html" style="color:white;text-decoration:none;" data-i18n="shop_nav_shop">Shop</a>
-      <select id="lang-select" aria-label="Language" style="padding:5px 8px;border:none;border-radius:4px;">
+<body class="store-page">
+  <header class="store-header">
+    <a class="store-brand" href="/shop.html">SMART DEVICE</a>
+    <nav class="store-nav" aria-label="Main navigation">
+      <a href="/shop.html" data-i18n="shop_nav_shop">Shop</a>
+      <a href="/about.html" data-i18n="shop_nav_about">About</a>
+      <a href="/contact.html" data-i18n="shop_nav_contact">Contact</a>
+      <a id="devices-nav-link" href="/devices.html" data-i18n="shop_nav_my_devices" style="display:none;">My Devices</a>
+    </nav>
+    <div class="store-actions">
+      <select id="lang-select" aria-label="Language" style="padding:6px 8px;border:1px solid #d8d8d8;background:#fff;border-radius:3px;">
         <option value="en">English</option>
         <option value="ja">日本語</option>
         <option value="es">Español</option>
         <option value="fr">Français</option>
         <option value="de">Deutsch</option>
         <option value="zh-TW">繁體中文</option>
-        <option value="ko">한국어</option>
+        <option value="ko">한国어</option>
       </select>
-      <span id="nav-email"></span>
-      <button class="btn btn-sm" style="background:rgba(255,255,255,0.2);color:white;" onclick="logout()" data-i18n="logout_btn">Logout</button>
+      <span id="user-welcome" data-i18n="welcome_text" style="display:none;">Welcome!</span>
+      <button id="toggle-auth-tab" data-i18n="login_tab" style="background:none;border:none;cursor:pointer;color:#17202a;font-weight:600;display:none;">Login</button>
+      <button id="logout-btn" data-i18n="logout_btn" style="display:none;background:none;border:none;cursor:pointer;color:#17202a;font-weight:600;">Logout</button>
+      <a id="cart-nav-link" href="/cart.html" class="cart-link" style="display:none;"><span data-i18n="shop_cart">Cart</span> <span id="cart-count">0</span></a>
     </div>
-  </nav>
+  </header>
 
-  <div class="page" style="padding: 20px;">
+  <main class="devices-container">
+    <h1 data-i18n="device_my_devices">My Devices</h1>
+    <p>Register new devices, manage your smart home, and control settings from one place.</p>
 
-    <div class="card mt-16">
-      <div class="card-body">
-        <h2 style="font-size:16px;margin-bottom:12px;" data-i18n="device_claim_title">Claim a Device by Code</h2>
-        <div style="display:flex;gap:8px;align-items:flex-end;">
-          <div class="form-group" style="flex:1;margin:0;">
-            <input type="text" id="claim-code" placeholder="e.g. ABC123" maxlength="7" style="text-transform:uppercase;">
+    <!-- Claim Device Section -->
+    <h2>Register A new Device</h2>
+    <div class="devices-register-area">
+      <div class="devices-section">
+        <h2 class="devices-section-title" data-i18n="device_claim_title">Claim a Device by Code</h2>
+        <div class="device-form-box">
+          <div class="device-form-row">
+            <div class="form-grid">
+              <label><span>Claim Code</span>
+                <input type="text" id="claim-code" placeholder="e.g. ABC123" maxlength="7" style="text-transform:uppercase;">
+              </label>
+            </div>
+            <button class="store-button dark sm" onclick="claimDevice()" data-i18n="device_claim_button">Claim Device</button>
           </div>
-          <button class="btn btn-primary" onclick="claimDevice()" data-i18n="device_claim_button">Claim</button>
+          <div id="claim-error" class="device-status-msg error"></div>
+          <div id="claim-success" class="device-status-msg success"></div>
         </div>
-        <div id="claim-error"   class="alert alert-error"></div>
-        <div id="claim-success" class="alert alert-success"></div>
+      </div>
+
+      <!-- Register New Device Section -->
+      <div class="devices-section">
+        <h2 class="devices-section-title" data-i18n="device_register_title">📡 Register New Device</h2>
+        <div class="device-form-box">
+          <p data-i18n="device_register_desc">Power on your device and connect it to WiFi first, then click below and double-press the BOOT button on the device within the countdown.</p>
+          <button class="store-button success sm" id="provision-btn" onclick="startProvision()" data-i18n="device_register_button">Start Registration</button>
+          <div class="countdown" id="provision-countdown" style="display:none;"></div>
+          <div id="provision-status" class="device-status-msg"></div>
+        </div>
       </div>
     </div>
 
-    <div class="provision-box mt-16">
-      <h3 data-i18n="device_register_title">📡 Register New Device</h3>
-      <p data-i18n="device_register_desc">Power on your device and connect it to WiFi first, then click below and double-press the BOOT button on the device within the countdown.</p>
-      <button class="btn btn-success" id="provision-btn" onclick="startProvision()" data-i18n="device_register_button">Start Registration (10s)</button>
-      <div class="countdown" id="provision-countdown" style="display:none"></div>
-      <div id="provision-status" class="alert mt-8"></div>
+    <!-- Devices List -->
+    <div class="devices-section">
+      <h2 class="devices-section-title" data-i18n="device_my_devices">Your Devices</h2>
+      <div id="device-list" class="device-grid">
+        <div class="empty-devices"><p data-i18n="device_loading">Loading...</p></div>
+      </div>
     </div>
-
-    <h2 style="font-size:16px;margin-top:24px;margin-bottom:4px;" data-i18n="device_my_devices">My Devices</h2>
-    <div id="device-list" class="device-list">
-      <div class="empty-state"><p data-i18n="device_loading">Loading...</p></div>
-    </div>
-
-  </div>
+  </main>
 
   <script>
-    const API_URL = 'https://api.unicornextermination.info';
+    const API_URL = ['localhost', '127.0.0.1'].includes(window.location.hostname)
+      ? 'http://localhost:8081'
+      : 'https://api.unicornextermination.info';
     const ui = (key) => window.i18n ? window.i18n.t(key) : key;
     let token    = localStorage.getItem('auth_token');
     let userEmail = localStorage.getItem('user_email');
@@ -77,22 +90,20 @@
 
     document.getElementById('nav-email').textContent = userEmail || '';
 
-    // ── Helpers ────────────────────────────────────────────────────────────────
     function authHeaders() { return { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }; }
 
     function showAlert(id, msg, type) {
       const el = document.getElementById(id);
       el.textContent = msg;
-      el.className = 'alert show alert-' + type;
+      el.className = 'device-status-msg show ' + type;
     }
-    function hideAlert(id) { const el = document.getElementById(id); el.className = 'alert'; }
+    function hideAlert(id) { document.getElementById(id).classList.remove('show'); }
 
     function logout() {
       ['auth_token','user_id','user_email'].forEach(k => localStorage.removeItem(k));
       window.location.href = '/';
     }
 
-    // ── Load devices ───────────────────────────────────────────────────────────
     async function loadDevices() {
       try {
         const res  = await fetch(`${API_URL}/devices/mine`, { headers: authHeaders() });
@@ -101,7 +112,7 @@
         renderDevices(data.devices || []);
       } catch (err) {
         document.getElementById('device-list').innerHTML =
-          `<div class="empty-state"><p>Failed to load devices: ${err.message}</p></div>`;
+          `<div class="empty-devices"><p>Failed to load devices: ${err.message}</p></div>`;
       }
     }
 
@@ -119,46 +130,83 @@
     function renderDevices(devices) {
       const list = document.getElementById('device-list');
       if (!devices.length) {
-        list.innerHTML = '<div class="empty-state"><p>No devices yet.</p><p>Claim one using the code from your device\'s setup page, or use Register above.</p></div>';
+        list.innerHTML = '<div class="empty-devices"><p>No devices yet.</p><p>Claim one using the code from your device\'s setup page, or register a new device above.</p></div>';
         return;
       }
       list.innerHTML = devices.map(d => `
-        <div class="device-card" id="dc-${d.id}">
-          <div class="device-card-header">
+        <div class="device-item" id="dc-${d.id}">
+          <div class="device-item-header">
             <div>
-              <div class="device-name" id="name-${d.id}">${escHtml(d.name)}</div>
+              <h3 id="name-${d.id}">${escHtml(d.name)}</h3>
               <div class="device-id">${escHtml(d.id)}</div>
             </div>
-            <span class="badge ${d.online ? 'badge-online' : 'badge-offline'}">${d.online ? '● Online' : '○ Offline'}</span>
+            <span class="device-status ${d.online ? 'online' : 'offline'}">${d.online ? '● Online' : '○ Offline'}</span>
           </div>
 
           <!-- Rename -->
-          <div style="display:flex;gap:6px;align-items:center;margin-bottom:12px;">
-            <input class="rename-input" id="rename-${d.id}" value="${escHtml(d.name)}" placeholder="Device name">
-            <button class="btn btn-sm btn-primary" onclick="renameDevice('${d.id}')">Rename</button>
+          <div class="device-rename">
+            <input id="rename-${d.id}" value="${escHtml(d.name)}" placeholder="Device name">
+            <button class="store-button dark sm" onclick="renameDevice('${d.id}')">Rename</button>
           </div>
 
           <!-- Light -->
-          <div class="control-label">💡 Light — <span id="light-${d.id}">${d.light}</span></div>
-          <div class="device-controls">
-            <button class="btn btn-sm btn-primary"  onclick="sendCmd('${d.id}','light/on',  'light-${d.id}','on')">On</button>
-            <button class="btn btn-sm btn-danger"   onclick="sendCmd('${d.id}','light/off', 'light-${d.id}','off')">Off</button>
+          <div class="device-control">
+            <div class="device-control-title">💡 Light — <span id="light-${d.id}">${d.light}</span></div>
+            <div class="device-control-buttons">
+              <button class="store-button dark sm" onclick="sendCmd('${d.id}','light/on',  'light-${d.id}','on')">On</button>
+              <button class="store-button sm" style="background:#e8e8e8;color:#333;" onclick="sendCmd('${d.id}','light/off', 'light-${d.id}','off')">Off</button>
+            </div>
           </div>
 
           <!-- Motor -->
-          <div class="control-label mt-8">⚙️ Motor — <span id="motor-${d.id}">${d.motor}</span></div>
-          <div class="device-controls">
-            <button class="btn btn-sm btn-primary"  onclick="sendCmd('${d.id}','motor/run',  'motor-${d.id}','running')">Run</button>
-            <button class="btn btn-sm btn-danger"   onclick="sendCmd('${d.id}','motor/stop', 'motor-${d.id}','stopped')">Stop</button>
+          <div class="device-control">
+            <div class="device-control-title">⚙️ Motor — <span id="motor-${d.id}">${d.motor}</span></div>
+            <div class="device-control-buttons">
+              <button class="store-button dark sm" onclick="sendCmd('${d.id}','motor/run',  'motor-${d.id}','running')">Run</button>
+              <button class="store-button sm" style="background:#e8e8e8;color:#333;" onclick="sendCmd('${d.id}','motor/stop', 'motor-${d.id}','stopped')">Stop</button>
+            </div>
           </div>
 
           <!-- RGB -->
-          <div class="control-label mt-8">🌈 RGB — <span id="rgb-${d.id}">${d.rgb}</span></div>
-          <div class="color-row">
-            ${COLORS.map(c => `<div class="swatch ${d.rgb===c.name?'active':''}" style="background:${c.hex};" title="${c.name}" onclick="setColor('${d.id}','${c.name}')"></div>`).join('')}
+          <div class="device-control">
+            <div class="device-control-title">🌈 RGB — <span id="rgb-${d.id}">${d.rgb}</span></div>
+            <div class="color-palette">
+              ${COLORS.map(c => `<div class="color-swatch ${d.rgb===c.name?'active':''}" style="background:${c.hex};" title="${c.name}" onclick="setColor('${d.id}','${c.name}')"></div>`).join('')}
+            </div>
           </div>
 
-          <div id="cmd-status-${d.id}" class="alert mt-8"></div>
+          <!-- Timed wave -->
+          <div class="device-control">
+            <div class="device-control-title">🌊 Timed Wave</div>
+            <div class="form-grid">
+              <label>Color
+                <select id="wave-color-${d.id}">
+                  <option value="red">Red</option>
+                  <option value="green">Green</option>
+                  <option value="blue">Blue</option>
+                  <option value="white" selected>White</option>
+                  <option value="yellow">Yellow</option>
+                  <option value="cyan">Cyan</option>
+                  <option value="purple">Purple</option>
+                </select>
+              </label>
+              <label>Brightness: <span id="wave-brightness-value-${d.id}">200</span>
+                <input id="wave-brightness-${d.id}" type="range" min="0" max="255" value="200" oninput="document.getElementById('wave-brightness-value-${d.id}').textContent=this.value">
+              </label>
+              <label>Motor speed: <span id="wave-speed-value-${d.id}">100</span>%
+                <input id="wave-speed-${d.id}" type="range" min="1" max="100" value="100" oninput="document.getElementById('wave-speed-value-${d.id}').textContent=this.value">
+              </label>
+              <label>Duration, seconds (0 = until stopped)
+                <input id="wave-duration-${d.id}" type="number" min="0" max="3600" value="10">
+              </label>
+            </div>
+            <div class="device-control-buttons">
+              <button class="store-button dark sm" onclick="startWave('${d.id}')">Start Wave</button>
+              <button class="store-button sm" style="background:#e8e8e8;color:#333;" onclick="stopWave('${d.id}')">Stop Wave</button>
+            </div>
+          </div>
+
+          <div id="cmd-status-${d.id}" class="device-status-msg"></div>
         </div>
       `).join('');
     }
@@ -167,10 +215,9 @@
       return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
 
-    // ── Commands ───────────────────────────────────────────────────────────────
     async function sendCmd(deviceId, endpoint, statusSpanId, expectedVal) {
       const statusEl = document.getElementById('cmd-status-' + deviceId);
-      statusEl.className = 'alert';
+      statusEl.className = 'device-status-msg';
       try {
         const res  = await fetch(`${API_URL}/devices/${deviceId}/${endpoint}`, { method: 'POST', headers: authHeaders() });
         const data = await res.json();
@@ -178,18 +225,17 @@
         const spanEl = document.getElementById(statusSpanId);
         if (spanEl) spanEl.textContent = expectedVal;
         statusEl.textContent = '✓ Done';
-        statusEl.className = 'alert show alert-success';
-        setTimeout(() => statusEl.className = 'alert', 2000);
+        statusEl.className = 'device-status-msg show success';
+        setTimeout(() => statusEl.className = 'device-status-msg', 2000);
       } catch (err) {
         statusEl.textContent = '✗ ' + err.message;
-        statusEl.className = 'alert show alert-error';
+        statusEl.className = 'device-status-msg show error';
       }
     }
 
     async function setColor(deviceId, color) {
-      // Update active swatch visually
-      document.querySelectorAll(`#dc-${deviceId} .swatch`).forEach(s => s.classList.remove('active'));
-      const clicked = [...document.querySelectorAll(`#dc-${deviceId} .swatch`)].find(s => s.title === color);
+      document.querySelectorAll(`#dc-${deviceId} .color-swatch`).forEach(s => s.classList.remove('active'));
+      const clicked = [...document.querySelectorAll(`#dc-${deviceId} .color-swatch`)].find(s => s.title === color);
       if (clicked) clicked.classList.add('active');
 
       const statusEl = document.getElementById('cmd-status-' + deviceId);
@@ -202,11 +248,55 @@
         const rgbEl = document.getElementById('rgb-' + deviceId);
         if (rgbEl) rgbEl.textContent = color;
         statusEl.textContent = '✓ Color set to ' + color;
-        statusEl.className = 'alert show alert-success';
-        setTimeout(() => statusEl.className = 'alert', 2000);
+        statusEl.className = 'device-status-msg show success';
+        setTimeout(() => statusEl.className = 'device-status-msg', 2000);
       } catch (err) {
         statusEl.textContent = '✗ ' + err.message;
-        statusEl.className = 'alert show alert-error';
+        statusEl.className = 'device-status-msg show error';
+      }
+    }
+
+    async function startWave(deviceId) {
+      const statusEl = document.getElementById('cmd-status-' + deviceId);
+      const color = document.getElementById('wave-color-' + deviceId).value;
+      const brightness = Number(document.getElementById('wave-brightness-' + deviceId).value);
+      const motorSpeed = Number(document.getElementById('wave-speed-' + deviceId).value);
+      const durationSeconds = Number(document.getElementById('wave-duration-' + deviceId).value);
+
+      try {
+        const res = await fetch(`${API_URL}/devices/${deviceId}/wave`, {
+          method: 'POST',
+          headers: authHeaders(),
+          body: JSON.stringify({ color, brightness, motorSpeed, durationSeconds })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Wave command failed');
+        document.getElementById('rgb-' + deviceId).textContent = color;
+        document.getElementById('motor-' + deviceId).textContent = 'running';
+        statusEl.textContent = durationSeconds === 0 ? '✓ Wave started until stopped' : `✓ Wave started for ${durationSeconds} seconds`;
+        statusEl.className = 'device-status-msg show success';
+      } catch (err) {
+        statusEl.textContent = '✗ ' + err.message;
+        statusEl.className = 'device-status-msg show error';
+      }
+    }
+
+    async function stopWave(deviceId) {
+      const statusEl = document.getElementById('cmd-status-' + deviceId);
+      try {
+        const res = await fetch(`${API_URL}/devices/${deviceId}/wave/stop`, {
+          method: 'POST',
+          headers: authHeaders()
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Wave stop failed');
+        document.getElementById('rgb-' + deviceId).textContent = 'off';
+        document.getElementById('motor-' + deviceId).textContent = 'stopped';
+        statusEl.textContent = '✓ Wave stopped';
+        statusEl.className = 'device-status-msg show success';
+      } catch (err) {
+        statusEl.textContent = '✗ ' + err.message;
+        statusEl.className = 'device-status-msg show error';
       }
     }
 
@@ -223,16 +313,15 @@
         document.getElementById('name-' + deviceId).textContent = name;
         const statusEl = document.getElementById('cmd-status-' + deviceId);
         statusEl.textContent = '✓ Renamed';
-        statusEl.className = 'alert show alert-success';
-        setTimeout(() => statusEl.className = 'alert', 2000);
+        statusEl.className = 'device-status-msg show success';
+        setTimeout(() => statusEl.className = 'device-status-msg', 2000);
       } catch (err) {
         const statusEl = document.getElementById('cmd-status-' + deviceId);
         statusEl.textContent = '✗ ' + err.message;
-        statusEl.className = 'alert show alert-error';
+        statusEl.className = 'device-status-msg show error';
       }
     }
 
-    // ── Claim ──────────────────────────────────────────────────────────────────
     async function claimDevice() {
       hideAlert('claim-error'); hideAlert('claim-success');
       const code = document.getElementById('claim-code').value.replace(/-/g,'').toUpperCase().trim();
@@ -249,7 +338,6 @@
       } catch (err) { showAlert('claim-error', err.message, 'error'); }
     }
 
-    // ── Provision ──────────────────────────────────────────────────────────────
     let provisionTimer = null, provisionPollTimer = null, provisionSessionId = null;
 
     async function startProvision() {
@@ -257,7 +345,7 @@
       const countdown = document.getElementById('provision-countdown');
       const status    = document.getElementById('provision-status');
 
-      status.className = 'alert'; countdown.style.display = 'block'; btn.disabled = true;
+      status.className = 'device-status-msg'; countdown.style.display = 'none'; btn.disabled = true;
 
       try {
         const res  = await fetch(`${API_URL}/provision/start`, {
@@ -269,8 +357,9 @@
         provisionSessionId = data.session_id;
         let remaining = data.ttl_seconds;
         countdown.textContent = remaining;
+        countdown.style.display = 'block';
         status.textContent = '⏳ Waiting… double-press BOOT on your device now!';
-        status.className = 'alert show alert-warning';
+        status.className = 'device-status-msg show error';
 
         provisionTimer = setInterval(() => {
           remaining--;
@@ -279,9 +368,9 @@
             clearInterval(provisionTimer);
             clearInterval(provisionPollTimer);
             countdown.style.display = 'none'; btn.disabled = false;
-            if (status.className.includes('warning')) {
+            if (status.className.includes('error')) {
               status.textContent = '⏰ Time expired — device did not respond. Try again.';
-              status.className = 'alert show alert-error';
+              status.className = 'device-status-msg show error';
             }
           }
         }, 1000);
@@ -295,7 +384,7 @@
               clearInterval(provisionTimer); clearInterval(provisionPollTimer);
               countdown.style.display = 'none'; btn.disabled = false;
               status.textContent = `✅ Device registered: ${pollData.claimed_device_id}`;
-              status.className = 'alert show alert-success';
+              status.className = 'device-status-msg show success';
               setTimeout(() => loadDevices(), 1000);
             }
           } catch (_) {}
@@ -304,13 +393,14 @@
       } catch (err) {
         countdown.style.display = 'none'; btn.disabled = false;
         status.textContent = '❌ ' + err.message;
-        status.className = 'alert show alert-error';
+        status.className = 'device-status-msg show error';
       }
     }
 
-    // ── Auto-refresh every 10s ─────────────────────────────────────────────────
     loadDevices();
     setInterval(loadDevices, 10000);
   </script>
+  <script src="/scripts/i18n.js"></script>
+  <script src="/scripts/header-manager.js"></script>
 </body>
 </html>
