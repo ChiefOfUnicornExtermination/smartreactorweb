@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="stylesheet" href="/styles/style.css">
+  <title>Order confirmed — Smart Device</title>
+</head>
+<body class="store-page">
+  <header class="store-header">
+    <a class="store-brand" href="/shop.html">SMART DEVICE</a>
+    <nav class="store-nav" aria-label="Main navigation">
+      <a href="/shop.html" data-i18n="shop_nav_shop">Shop</a>
+      <a href="/about.html" data-i18n="shop_nav_about">About</a>
+      <a href="/contact.html" data-i18n="shop_nav_contact">Contact</a>
+      <a id="devices-nav-link" href="/devices.html" data-i18n="shop_nav_my_devices" style="display:none;">My Devices</a>
+    </nav>
+    <div class="store-actions">
+      <select id="lang-select" aria-label="Language" style="padding:6px 8px;border:1px solid #d8d8d8;background:#fff;border-radius:3px;">
+        <option value="en">English</option>
+        <option value="ja">日本語</option>
+        <option value="es">Español</option>
+        <option value="fr">Français</option>
+        <option value="de">Deutsch</option>
+        <option value="zh-TW">繁體中文</option>
+        <option value="ko">한국어</option>
+      </select>
+      <span id="user-welcome" data-i18n="welcome_text" style="display:none;">Welcome!</span>
+      <button id="toggle-auth-tab" data-i18n="login_tab" style="background:none;border:none;cursor:pointer;color:#17202a;font-weight:600;">Login</button>
+      <button id="logout-btn" data-i18n="logout_btn" style="display:none;background:none;border:none;cursor:pointer;color:#17202a;font-weight:600;">Logout</button>
+      <a id="cart-nav-link" href="/cart.html" class="cart-link" style="display:none;"><span data-i18n="shop_cart">Cart</span> <span id="cart-count">0</span></a>
+    </div>
+  </header>
+  <main class="success-page"><p class="eyebrow" data-i18n="success_title">ORDER CONFIRMED</p><h1 data-i18n="success_message">Thank you for your purchase.</h1><p data-i18n="success_detail">Your order has been received. We’ll send delivery updates to your email address.</p><p class="order-number" id="order-number"></p><a class="store-button dark" href="/shop.html" data-i18n="success_continue">Continue shopping</a></main>
+  <script>
+    const ui = (key) => window.i18n ? window.i18n.t(key) : key;
+    const id = new URLSearchParams(location.search).get('order_id');
+    if (id) document.getElementById('order-number').textContent = ui('success_order_number') + ' ' + id;
+    window.__i18nOnLanguageChange = function() { if (id) document.getElementById('order-number').textContent = ui('success_order_number') + ' ' + id; };
+  </script>
+  <script src="/scripts/i18n.js"></script>
+  <script src="/scripts/header-manager.js"></script>
+</body>
+</html>

@@ -1,0 +1,34 @@
+steps:
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      - "build"
+      - "-t"
+      - "gcr.io/unicorn-extermination/smartdevice-web:$COMMIT_SHA"
+      - "-t"
+      - "gcr.io/unicorn-extermination/smartdevice-web:latest"
+      - "."
+
+  - name: "gcr.io/cloud-builders/docker"
+    args: ["push", "--all-tags", "gcr.io/unicorn-extermination/smartdevice-web"]
+
+  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    entrypoint: "gcloud"
+    args:
+      - "run"
+      - "deploy"
+      - "unicorndevicebroker-ui"
+      - "--image"
+      - "gcr.io/unicorn-extermination/smartdevice-web:latest"
+      - "--region"
+      - "asia-northeast1"
+      - "--platform"
+      - "managed"
+      - "--memory"
+      - "256Mi"
+      - "--min-instances"
+      - "0"
+      - "--allow-unauthenticated"
+
+images:
+  - "gcr.io/unicorn-extermination/smartdevice-web:$COMMIT_SHA"
+  - "gcr.io/unicorn-extermination/smartdevice-web:latest"

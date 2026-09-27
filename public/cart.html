@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="stylesheet" href="/styles/style.css">
+  <title>Cart — Smart Device</title>
+</head>
+<body class="store-page">
+  <header class="store-header">
+    <a class="store-brand" href="/shop.html">SMART DEVICE</a>
+    <nav class="store-nav">
+      <a href="/shop.html" data-i18n="shop_nav_shop">Shop</a>
+      <a href="/about.html" data-i18n="shop_nav_about">About</a>
+      <a href="/contact.html" data-i18n="shop_nav_contact">Contact</a>
+      <a id="devices-nav-link" href="/devices.html" data-i18n="shop_nav_my_devices" style="display:none;">My Devices</a>
+    </nav>
+    <div class="store-actions">
+      <select id="lang-select" aria-label="Language" style="padding:6px 8px;border:1px solid #d8d8d8;background:#fff;">
+        <option value="en">English</option>
+        <option value="ja">日本語</option>
+        <option value="es">Español</option>
+        <option value="fr">Français</option>
+        <option value="de">Deutsch</option>
+        <option value="zh-TW">繁體中文</option>
+        <option value="ko">한국어</option>
+      </select>
+      <span id="user-welcome" data-i18n="welcome_text" style="display:none;">Welcome!</span>
+      <button id="toggle-auth-tab" data-i18n="login_tab" style="background:none;border:none;cursor:pointer;color:#17202a;font-weight:600;">Login</button>
+      <button id="logout-btn" data-i18n="logout_btn" style="display:none;background:none;border:none;cursor:pointer;color:#17202a;font-weight:600;">Logout</button>
+      <a id="cart-nav-link" href="/cart.html" class="cart-link" style="display:none;"><span data-i18n="shop_cart">Cart</span> <span id="cart-count">0</span></a>
+    </div>
+  </header>
+  <main class="store-section narrow-section">
+    <div class="section-heading"><div><p class="eyebrow" data-i18n="cart_your_order">YOUR ORDER</p><h1 data-i18n="shop_cart_title">Shopping cart</h1></div><a href="/shop.html" class="back-link" data-i18n="shop_continue">Continue shopping →</a></div>
+    <div id="cart-content"></div>
+  </main>
+  <script>
+    const API_URL = ['localhost', '127.0.0.1'].includes(window.location.hostname)
+      ? 'http://localhost:8081'
+      : 'https://api.unicornextermination.info';
+    const esc = value => String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    const ui = (key) => window.i18n ? window.i18n.t(key) : key;
+    function renderCart() {
+      const cart = JSON.parse(localStorage.getItem('shopping_cart') || '[]');
+      document.getElementById('cart-count').textContent = cart.reduce((total, item) => total + item.quantity, 0);
+      if (!cart.length) { document.getElementById('cart-content').innerHTML = '<div class="empty-store"><h2>' + ui('cart_empty_title') + '</h2><p>' + ui('cart_empty_text') + '</p><a class="store-button dark" href="/shop.html">' + ui('cart_shop_products') + '</a></div>'; return; }
+      const subtotal = cart.reduce((total, item) => total + item.price * item.quantity, 0);
+      document.getElementById('cart-content').innerHTML = `<div class="cart-layout"><div class="cart-items">${cart.map((item, index) => `<article class="cart-item"><img src="${esc(item.image_url || '/images/websiteimage.png')}" alt="${esc(item.name)}"><div class="cart-item-copy"><h2>${esc(item.name)}</h2><p>$${item.price.toFixed(2)}</p><label>${ui('shop_quantity')} <input type="number" min="1" value="${item.quantity}" onchange="changeQuantity(${index}, this.value)"></label></div><strong>$${(item.price * item.quantity).toFixed(2)}</strong><button class="remove-button" onclick="removeItem(${index})">${ui('cart_remove')}</button></article>`).join('')}</div><aside class="order-summary"><h2>${ui('cart_order_summary')}</h2><div><span>${ui('cart_subtotal')}</span><strong>$${subtotal.toFixed(2)}</strong></div><div><span>${ui('cart_shipping')}</span><span>${ui('cart_shipping_calc')}</span></div><div class="summary-total"><span>${ui('cart_total')}</span><strong>$${subtotal.toFixed(2)}</strong></div><a class="store-button dark full-width" href="/checkout.html">${ui('cart_checkout')}</a></aside></div>`;
+    }
+    function changeQuantity(index, value) { const cart = JSON.parse(localStorage.getItem('shopping_cart') || '[]'); cart[index].quantity = Math.max(1, Number(value) || 1); localStorage.setItem('shopping_cart', JSON.stringify(cart)); renderCart(); }
+    function removeItem(index) { const cart = JSON.parse(localStorage.getItem('shopping_cart') || '[]'); cart.splice(index, 1); localStorage.setItem('shopping_cart', JSON.stringify(cart)); renderCart(); }
+    window.__i18nOnLanguageChange = renderCart;
+    renderCart();
+  </script>
+  <script src="/scripts/i18n.js"></script>
+  <script src="/scripts/header-manager.js"></script>
+</body>
+</html>
