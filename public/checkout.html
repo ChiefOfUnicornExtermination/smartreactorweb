@@ -18,6 +18,14 @@
       <a id="devices-nav-link" href="/devices.html" data-i18n="shop_nav_my_devices" style="display:none;">My Devices</a>
     </nav>
     <div class="store-actions">
+      <select id="theme-select" aria-label="Theme" style="padding:6px 8px;border:1px solid #d8d8d8;background:#fff;">
+        <option value="light">☀️ Light</option>
+        <option value="dark">🌙 Dark</option>
+      </select>
+      <select id="currency-select" aria-label="Currency" style="padding:6px 8px;border:1px solid #d8d8d8;background:#fff;">
+        <option value="USD">USD ($)</option>
+        <option value="JPY">JPY (¥)</option>
+      </select>
       <select id="lang-select" aria-label="Language" style="padding:6px 8px;border:1px solid #d8d8d8;background:#fff;">
         <option value="en">English</option>
         <option value="ja">日本語</option>
@@ -87,8 +95,24 @@
       }
     });
     
+    function getPaymentCurrency() {
+      return window.currency && window.currency.getCurrent() === 'JPY' ? 'jpy' : 'usd';
+    }
+    
+    function getPaymentAmount() {
+      if (getPaymentCurrency() === 'jpy') {
+        return Math.round(subtotal * 100); // JPY × 100
+      }
+      return Math.round(subtotal * 100); // USD in cents
+    }
+    
     function renderSummary() {
-      document.getElementById('checkout-summary').innerHTML = `<h2>${ui('checkout_order_summary')}</h2>${cart.map(item => `<div><span>${item.name} × ${item.quantity}</span><strong>$${(item.price * item.quantity).toFixed(2)}</strong></div>`).join('')}<div class="summary-total"><span>${ui('cart_total')}</span><strong>¥${Math.round(subtotal)}</strong></div><button class="store-button dark full-width" type="submit">${ui('checkout_place_order')}</button>`;
+      const currency = window.currency ? window.currency.getCurrent() : 'USD';
+      const formattedPrice = window.currency ? window.currency.formatPrice(subtotal) : '$' + subtotal.toFixed(2);
+      document.getElementById('checkout-summary').innerHTML = `<h2>${ui('checkout_order_summary')}</h2>${cart.map(item => {
+        const itemPrice = window.currency ? window.currency.formatPrice(item.price * item.quantity) : '$' + (item.price * item.quantity).toFixed(2);
+        return `<div><span>${item.name} × ${item.quantity}</span><strong>${itemPrice}</strong></div>`;
+      }).join('')}<div class="summary-total"><span>${ui('cart_total')}</span><strong>${formattedPrice}</strong></div><button class="store-button dark full-width" type="submit">${ui('checkout_place_order')}</button>`;
       const countrySelect = document.querySelector('select[name="country"]');
       if (countrySelect) {
         countrySelect.innerHTML = `<option value="">${ui('checkout_select_country')}</option><option>${ui('checkout_country_us')}</option><option>${ui('checkout_country_jp')}</option><option>${ui('checkout_country_ca')}</option><option>${ui('checkout_country_uk')}</option>`;
@@ -118,7 +142,10 @@
       };
       
       try {
-        // Create payment intent on backend
+        // Create payment intent on backend with correct currency
+        const paymentCurrency = getPaymentCurrency();
+        const paymentAmount = getPaymentAmount();
+        
         const intentRes = await fetch(`${API_URL}/store/payment-intent`, {
           method: 'POST',
           headers: {
@@ -126,8 +153,8 @@
             'Authorization': 'Bearer ' + token
           },
           body: JSON.stringify({
-            amount: subtotal,
-            currency: 'jpy',
+            amount: paymentAmount,
+            currency: paymentCurrency,
             metadata: { email: customer.email }
           })
         });
@@ -157,7 +184,8 @@
             customer,
             shipping_address,
             items: cart,
-            payment_intent_id: intentId
+            payment_intent_id: intentId,
+            currency: paymentCurrency
           })
         });
         
@@ -174,7 +202,10 @@
     });
     
     window.__i18nOnLanguageChange = renderSummary;
+    window.__currencyOnChange = renderSummary;
   </script>
+  <script src="/scripts/theme.js"></script>
+  <script src="/scripts/currency.js"></script>
   <script src="/scripts/i18n.js"></script>
   <script src="/scripts/header-manager.js"></script>
 </body>

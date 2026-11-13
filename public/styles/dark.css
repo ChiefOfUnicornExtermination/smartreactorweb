@@ -1,0 +1,260 @@
+/* Dark Theme - Override theme-specific colors */
+
+:root {
+  --bg-primary: #1a1a1a;
+  --bg-secondary: #2d2d2d;
+  --bg-tertiary: #3a3a3a;
+  --text-primary: #e8e8e8;
+  --text-secondary: #b0b0b0;
+  --text-muted: #888888;
+  --border-color: #404040;
+  --border-muted: #505050;
+  --accent-primary: #667eea;
+  --accent-secondary: #764ba2;
+  --card-bg: #2d2d2d;
+  --card-shadow: rgba(0, 0, 0, 0.5);
+  --input-bg: #3a3a3a;
+  --input-border: #505050;
+  --error-bg: #3a2121;
+  --error-text: #ff8a8a;
+  --success-bg: #1f3a1f;
+  --success-text: #6dd56d;
+  --warning-bg: #3a3a21;
+  --warning-text: #ffdb58;
+  --badge-offline-bg: #404040;
+  --badge-offline-text: #888888;
+  --header-bg: #2d2d2d;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.store-page {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.store-header {
+  background: var(--bg-secondary);
+  border-bottom-color: var(--border-color);
+}
+
+.store-brand {
+  color: var(--text-primary);
+}
+
+.store-nav a,
+.store-actions a {
+  color: var(--text-primary);
+}
+
+.card {
+  background: var(--card-bg);
+  box-shadow: 0 10px 40px var(--card-shadow);
+}
+
+.card-header {
+  background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+  color: white;
+}
+
+.form-group label {
+  color: var(--text-primary);
+}
+
+.form-group input,
+.form-group select {
+  background: var(--input-bg);
+  border-color: var(--input-border);
+  color: var(--text-primary);
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+}
+
+.alert-error {
+  background: var(--error-bg);
+  color: var(--error-text);
+}
+
+.alert-success {
+  background: var(--success-bg);
+  color: var(--success-text);
+}
+
+.alert-warning {
+  background: var(--warning-bg);
+  color: var(--warning-text);
+}
+
+.tab-btn {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+.tab-btn.active {
+  background: var(--accent-primary);
+  color: white;
+}
+
+.device-card {
+  border-color: var(--border-color);
+  background: var(--card-bg);
+}
+
+.swatch.active {
+  border-color: var(--text-primary);
+}
+
+.provision-box {
+  border-color: var(--accent-primary);
+}
+
+.provision-box h3 {
+  color: var(--text-primary);
+}
+
+.countdown {
+  color: var(--accent-primary);
+}
+
+.badge-offline {
+  background: var(--badge-offline-bg);
+  color: var(--badge-offline-text);
+}
+
+.shop-hero {
+  background: var(--header-bg);
+}
+
+.shop-hero-copy > p:not(.eyebrow) {
+  color: var(--text-secondary);
+}
+
+.eyebrow {
+  color: var(--text-muted);
+}
+
+.product-card {
+  background: var(--card-bg);
+  border-color: var(--border-color);
+}
+
+.product-image-link {
+  background: #3a3a3a;
+}
+
+.product-label {
+  background: var(--text-primary);
+  color: #1a1a1a;
+}
+
+.product-description {
+  color: var(--text-secondary);
+}
+
+.text-button,
+.remove-button,
+.back-link {
+  color: var(--text-primary);
+}
+
+.store-status {
+  color: var(--text-secondary);
+}
+
+.store-status.error {
+  color: #ff8a8a;
+}
+
+.detail-description {
+  color: var(--text-secondary);
+}
+
+.quantity-control input,
+.cart-item input {
+  background: var(--input-bg);
+  border-color: var(--border-muted);
+  color: var(--text-primary);
+}
+
+.order-summary {
+  background: var(--card-bg);
+  border-color: var(--border-color);
+}
+
+.order-summary > div {
+  color: var(--text-primary);
+}
+
+.summary-total {
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+.checkout-form {
+  background: var(--card-bg);
+  border-color: var(--border-color);
+}
+
+.form-grid input,
+.form-grid select {
+  background: var(--input-bg);
+  border-color: var(--border-muted);
+  color: var(--text-primary);
+}
+
+.form-note {
+  color: var(--text-secondary);
+}
+
+.cart-item {
+  border-bottom-color: var(--border-color);
+}
+
+.empty-store h2,
+.success-page h1,
+.product-detail h1,
+.shop-hero h1 {
+  color: var(--text-primary);
+}
+
+.empty-store p,
+.success-page > p:not(.eyebrow):not(.order-number) {
+  color: var(--text-secondary);
+}
+
+.order-number {
+  color: var(--text-muted);
+}
+
+.section-heading {
+  border-bottom-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+.sort-control select {
+  border-bottom-color: var(--text-primary);
+  background: transparent;
+  color: var(--text-primary);
+}
+
+.detail-image {
+  border-color: var(--border-color);
+}
+
+.text-muted {
+  color: var(--text-muted);
+}
+
+/* Stripe card element dark theme */
+#card-element {
+  background-color: var(--input-bg) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--input-border) !important;
+}

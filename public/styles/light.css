@@ -1,0 +1,253 @@
+/* Light Theme - Override theme-specific colors */
+
+:root {
+  --bg-primary: #f7f6f2;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #f0f0f0;
+  --text-primary: #17202a;
+  --text-secondary: #596164;
+  --text-muted: #8d7964;
+  --border-color: #dfe1df;
+  --border-muted: #aeb4b3;
+  --accent-primary: #667eea;
+  --accent-secondary: #764ba2;
+  --card-bg: #ffffff;
+  --card-shadow: rgba(0, 0, 0, 0.2);
+  --input-bg: #ffffff;
+  --input-border: #ddd;
+  --error-bg: #ffebee;
+  --error-text: #c62828;
+  --success-bg: #e8f5e9;
+  --success-text: #2e7d32;
+  --warning-bg: #fff8e1;
+  --warning-text: #f57f17;
+  --badge-offline-bg: #fafafa;
+  --badge-offline-text: #999;
+  --header-bg: #ebe8e2;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.store-page {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.store-header {
+  background: var(--bg-secondary);
+  border-bottom-color: var(--border-color);
+}
+
+.store-brand {
+  color: var(--text-primary);
+}
+
+.store-nav a,
+.store-actions a {
+  color: var(--text-primary);
+}
+
+.card {
+  background: var(--card-bg);
+  box-shadow: 0 10px 40px var(--card-shadow);
+}
+
+.card-header {
+  background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+  color: white;
+}
+
+.form-group label {
+  color: var(--text-primary);
+}
+
+.form-group input,
+.form-group select {
+  background: var(--input-bg);
+  border-color: var(--input-border);
+  color: var(--text-primary);
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+}
+
+.alert-error {
+  background: var(--error-bg);
+  color: var(--error-text);
+}
+
+.alert-success {
+  background: var(--success-bg);
+  color: var(--success-text);
+}
+
+.alert-warning {
+  background: var(--warning-bg);
+  color: var(--warning-text);
+}
+
+.tab-btn {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+.tab-btn.active {
+  background: var(--accent-primary);
+  color: white;
+}
+
+.device-card {
+  border-color: var(--border-color);
+  background: var(--card-bg);
+}
+
+.swatch.active {
+  border-color: var(--text-primary);
+}
+
+.provision-box {
+  border-color: var(--accent-primary);
+}
+
+.provision-box h3 {
+  color: var(--text-primary);
+}
+
+.countdown {
+  color: var(--accent-primary);
+}
+
+.badge-offline {
+  background: var(--badge-offline-bg);
+  color: var(--badge-offline-text);
+}
+
+.shop-hero {
+  background: var(--header-bg);
+}
+
+.shop-hero-copy > p:not(.eyebrow) {
+  color: var(--text-secondary);
+}
+
+.eyebrow {
+  color: var(--text-muted);
+}
+
+.product-card {
+  background: var(--card-bg);
+  border-color: var(--border-color);
+}
+
+.product-image-link {
+  background: #e6e2dc;
+}
+
+.product-label {
+  background: var(--text-primary);
+  color: #ffffff;
+}
+
+.product-description {
+  color: var(--text-secondary);
+}
+
+.text-button,
+.remove-button,
+.back-link {
+  color: var(--text-primary);
+}
+
+.store-status {
+  color: var(--text-secondary);
+}
+
+.store-status.error {
+  color: #9d2d2d;
+}
+
+.detail-description {
+  color: var(--text-secondary);
+}
+
+.quantity-control input,
+.cart-item input {
+  background: var(--input-bg);
+  border-color: var(--border-muted);
+  color: var(--text-primary);
+}
+
+.order-summary {
+  background: var(--card-bg);
+  border-color: var(--border-color);
+}
+
+.order-summary > div {
+  color: var(--text-primary);
+}
+
+.summary-total {
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+.checkout-form {
+  background: var(--card-bg);
+  border-color: var(--border-color);
+}
+
+.form-grid input,
+.form-grid select {
+  background: var(--input-bg);
+  border-color: var(--border-muted);
+  color: var(--text-primary);
+}
+
+.form-note {
+  color: var(--text-secondary);
+}
+
+.cart-item {
+  border-bottom-color: var(--border-color);
+}
+
+.empty-store h2,
+.success-page h1,
+.product-detail h1,
+.shop-hero h1 {
+  color: var(--text-primary);
+}
+
+.empty-store p,
+.success-page > p:not(.eyebrow):not(.order-number) {
+  color: var(--text-secondary);
+}
+
+.order-number {
+  color: var(--text-muted);
+}
+
+.section-heading {
+  border-bottom-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+.sort-control select {
+  border-bottom-color: var(--text-primary);
+  background: transparent;
+  color: var(--text-primary);
+}
+
+.detail-image {
+  border-color: var(--border-color);
+}
+
+.text-muted {
+  color: #999;
+}

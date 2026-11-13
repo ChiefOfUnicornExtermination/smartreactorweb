@@ -17,6 +17,14 @@
       <a id="devices-nav-link" href="/devices.html" data-i18n="shop_nav_my_devices" style="display:none;">My Devices</a>
     </nav>
     <div class="store-actions">
+      <select id="theme-select" aria-label="Theme" style="padding:6px 8px;border:1px solid #d8d8d8;background:#fff;">
+        <option value="light">☀️ Light</option>
+        <option value="dark">🌙 Dark</option>
+      </select>
+      <select id="currency-select" aria-label="Currency" style="padding:6px 8px;border:1px solid #d8d8d8;background:#fff;">
+        <option value="USD">USD ($)</option>
+        <option value="JPY">JPY (¥)</option>
+      </select>
       <select id="lang-select" aria-label="Language" style="padding:6px 8px;border:1px solid #d8d8d8;background:#fff;">
         <option value="en">English</option>
         <option value="ja">日本語</option>
@@ -62,7 +70,7 @@
             <div class="detail-copy">
               <p class="eyebrow">SMART DEVICE</p>
               <h1>${esc(product.name)}</h1>
-              <p class="detail-price">$${Number(product.price).toFixed(2)}</p>
+              <p class="detail-price" data-price="${Number(product.price)}">${window.currency ? window.currency.formatPrice(Number(product.price)) : '$' + Number(product.price).toFixed(2)}</p>
               <p class="detail-description">${esc(product.description || '')}</p>
               <p class="stock-message">${product.stock_quantity > 0 ? ui('shop_in_stock') : ui('shop_unavailable')}</p>
               <div class="quantity-control"><label for="quantity">${ui('shop_quantity')}</label><input id="quantity" type="number" min="1" max="${Math.max(1, product.stock_quantity || 1)}" value="1"></div>
@@ -82,8 +90,11 @@
       localStorage.setItem('shopping_cart', JSON.stringify(cart)); updateCartCount(); location.href = '/cart.html';
     }
     window.__i18nOnLanguageChange = function() { updateCartCount(); loadProduct(); };
+    window.__currencyOnChange = function() { loadProduct(); };
     updateCartCount(); loadProduct();
   </script>
+  <script src="/scripts/theme.js"></script>
+  <script src="/scripts/currency.js"></script>
   <script src="/scripts/i18n.js"></script>
   <script src="/scripts/header-manager.js"></script>
 </body>

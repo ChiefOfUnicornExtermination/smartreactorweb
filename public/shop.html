@@ -17,6 +17,14 @@
       <a id="devices-nav-link" href="/devices.html" data-i18n="shop_nav_my_devices" style="display:none;">My Devices</a>
     </nav>
     <div class="store-actions">
+      <select id="theme-select" aria-label="Theme" style="padding:6px 8px;border:1px solid #d8d8d8;background:#fff;">
+        <option value="light">☀️ Light</option>
+        <option value="dark">🌙 Dark</option>
+      </select>
+      <select id="currency-select" aria-label="Currency" style="padding:6px 8px;border:1px solid #d8d8d8;background:#fff;">
+        <option value="USD">USD ($)</option>
+        <option value="JPY">JPY (¥)</option>
+      </select>
       <select id="lang-select" aria-label="Language" style="padding:6px 8px;border:1px solid #d8d8d8;background:#fff;">
         <option value="en">English</option>
         <option value="ja">日本語</option>
@@ -99,7 +107,7 @@
               <p class="product-description">${escapeHtml(product.description || '')}</p>
             </div>
             <div class="product-card-footer">
-              <strong>$${Number(product.price).toFixed(2)}</strong>
+              <strong data-price="${Number(product.price)}">${window.currency ? window.currency.formatPrice(Number(product.price)) : '$' + Number(product.price).toFixed(2)}</strong>
               <button class="text-button" onclick="addToCart('${escapeHtml(product.id)}')">${ui('shop_add_to_cart')} <span aria-hidden="true">→</span></button>
             </div>
           </div>
@@ -155,10 +163,16 @@
       updateCartCount();
     };
 
+    window.__currencyOnChange = function() {
+      renderProducts();
+    };
+
     document.getElementById('sort-products').addEventListener('change', renderProducts);
     updateCartCount();
     loadProducts();
   </script>
+  <script src="/scripts/theme.js"></script>
+  <script src="/scripts/currency.js"></script>
   <script src="/scripts/i18n.js"></script>
   <script src="/scripts/header-manager.js"></script>
 </body>

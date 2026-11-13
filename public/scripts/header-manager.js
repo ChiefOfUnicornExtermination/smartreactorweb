@@ -1,6 +1,7 @@
 // Unified header management - initialize on every page load
 function initializeHeader() {
   const isLoggedIn = !!localStorage.getItem('auth_token');
+  const userEmail = localStorage.getItem('user_email');
   
   // Show/hide login button
   const loginBtn = document.getElementById('toggle-auth-tab');
@@ -16,6 +17,10 @@ function initializeHeader() {
   }
   if (userWelcome) {
     userWelcome.style.display = isLoggedIn ? 'inline' : 'none';
+    const welcomeText = window.__i18n_welcome_text || userWelcome.textContent;
+    userWelcome.textContent = isLoggedIn && userEmail
+      ? `${welcomeText} ${userEmail}`
+      : welcomeText;
   }
   
   // Show/hide devices link
@@ -72,4 +77,3 @@ if (document.readyState === 'loading') {
 window.__i18nOnLanguageChange_header = function() {
   initializeHeader();
 };
-

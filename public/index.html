@@ -97,6 +97,7 @@
             <input type="password" id="signup-confirm" required autocomplete="new-password">
           </div>
           <button type="submit" class="auth-button" data-i18n="create_account_btn">Create Account</button>
+          <button type="button" class="auth-button" onclick="resendVerification()" style="margin-top:10px;background:#596164;">Resend confirmation email</button>
           <div id="signup-error" class="auth-alert error"></div>
           <div id="signup-success" class="auth-alert success"></div>
         </form>
@@ -151,10 +152,31 @@
         const res  = await fetch(`${API_URL}/auth/signup`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password }) });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Signup failed');
-        showAlert('signup-success', '✓ Account created! You can now sign in.', 'success');
-        ['signup-email','signup-password','signup-confirm'].forEach(id => document.getElementById(id).value = '');
-        setTimeout(() => showTab('login'), 2000);
+        showAlert('signup-success', '✓ ' + data.message, 'success');
+        ['signup-password','signup-confirm'].forEach(id => document.getElementById(id).value = '');
       } catch (err) { showAlert('signup-error', err.message, 'error'); }
+    }
+
+    async function resendVerification() {
+      hideAlert('signup-error'); hideAlert('signup-success');
+      const email = document.getElementById('signup-email').value.trim();
+      if (!email) {
+        showAlert('signup-error', 'Enter your email address above to resend confirmation.', 'error');
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API_URL}/auth/verify-email/resend`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Could not resend confirmation email');
+        showAlert('signup-success', '✓ ' + data.message, 'success');
+      } catch (err) {
+        showAlert('signup-error', err.message, 'error');
+      }
     }
 
     showTab('login');

@@ -84,11 +84,8 @@
       : 'https://api.unicornextermination.info';
     const ui = (key) => window.i18n ? window.i18n.t(key) : key;
     let token    = localStorage.getItem('auth_token');
-    let userEmail = localStorage.getItem('user_email');
 
     if (!token) { window.location.href = '/'; }
-
-    document.getElementById('nav-email').textContent = userEmail || '';
 
     function authHeaders() { return { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }; }
 
@@ -149,21 +146,13 @@
             <button class="store-button dark sm" onclick="renameDevice('${d.id}')">Rename</button>
           </div>
 
+          ${d.type === 'crackerpopper' ? '' : `
           <!-- Light -->
           <div class="device-control">
             <div class="device-control-title">💡 Light — <span id="light-${d.id}">${d.light}</span></div>
             <div class="device-control-buttons">
               <button class="store-button dark sm" onclick="sendCmd('${d.id}','light/on',  'light-${d.id}','on')">On</button>
               <button class="store-button sm" style="background:#e8e8e8;color:#333;" onclick="sendCmd('${d.id}','light/off', 'light-${d.id}','off')">Off</button>
-            </div>
-          </div>
-
-          <!-- Motor -->
-          <div class="device-control">
-            <div class="device-control-title">⚙️ Motor — <span id="motor-${d.id}">${d.motor}</span></div>
-            <div class="device-control-buttons">
-              <button class="store-button dark sm" onclick="sendCmd('${d.id}','motor/run',  'motor-${d.id}','running')">Run</button>
-              <button class="store-button sm" style="background:#e8e8e8;color:#333;" onclick="sendCmd('${d.id}','motor/stop', 'motor-${d.id}','stopped')">Stop</button>
             </div>
           </div>
 
@@ -174,7 +163,18 @@
               ${COLORS.map(c => `<div class="color-swatch ${d.rgb===c.name?'active':''}" style="background:${c.hex};" title="${c.name}" onclick="setColor('${d.id}','${c.name}')"></div>`).join('')}
             </div>
           </div>
+          `}
 
+          <!-- Motor -->
+          <div class="device-control">
+            <div class="device-control-title">⚙️ Motor — <span id="motor-${d.id}">${d.motor}</span></div>
+            <div class="device-control-buttons">
+              <button class="store-button dark sm" onclick="sendCmd('${d.id}','motor/run',  'motor-${d.id}','running')">Run</button>
+              <button class="store-button sm" style="background:#e8e8e8;color:#333;" onclick="sendCmd('${d.id}','motor/stop', 'motor-${d.id}','stopped')">Stop</button>
+            </div>
+          </div>
+
+          ${d.type === 'crackerpopper' ? '' : `
           <!-- Timed wave -->
           <div class="device-control">
             <div class="device-control-title">🌊 Timed Wave</div>
@@ -205,6 +205,7 @@
               <button class="store-button sm" style="background:#e8e8e8;color:#333;" onclick="stopWave('${d.id}')">Stop Wave</button>
             </div>
           </div>
+          `}
 
           <div id="cmd-status-${d.id}" class="device-status-msg"></div>
         </div>

@@ -17,6 +17,14 @@
       <a id="devices-nav-link" href="/devices.html" data-i18n="shop_nav_my_devices" style="display:none;">My Devices</a>
     </nav>
     <div class="store-actions">
+      <select id="theme-select" aria-label="Theme" style="padding:6px 8px;border:1px solid #d8d8d8;background:#fff;">
+        <option value="light">☀️ Light</option>
+        <option value="dark">🌙 Dark</option>
+      </select>
+      <select id="currency-select" aria-label="Currency" style="padding:6px 8px;border:1px solid #d8d8d8;background:#fff;">
+        <option value="USD">USD ($)</option>
+        <option value="JPY">JPY (¥)</option>
+      </select>
       <select id="lang-select" aria-label="Language" style="padding:6px 8px;border:1px solid #d8d8d8;background:#fff;">
         <option value="en">English</option>
         <option value="ja">日本語</option>
@@ -47,13 +55,16 @@
       document.getElementById('cart-count').textContent = cart.reduce((total, item) => total + item.quantity, 0);
       if (!cart.length) { document.getElementById('cart-content').innerHTML = '<div class="empty-store"><h2>' + ui('cart_empty_title') + '</h2><p>' + ui('cart_empty_text') + '</p><a class="store-button dark" href="/shop.html">' + ui('cart_shop_products') + '</a></div>'; return; }
       const subtotal = cart.reduce((total, item) => total + item.price * item.quantity, 0);
-      document.getElementById('cart-content').innerHTML = `<div class="cart-layout"><div class="cart-items">${cart.map((item, index) => `<article class="cart-item"><img src="${esc(item.image_url || '/images/websiteimage.png')}" alt="${esc(item.name)}"><div class="cart-item-copy"><h2>${esc(item.name)}</h2><p>$${item.price.toFixed(2)}</p><label>${ui('shop_quantity')} <input type="number" min="1" value="${item.quantity}" onchange="changeQuantity(${index}, this.value)"></label></div><strong>$${(item.price * item.quantity).toFixed(2)}</strong><button class="remove-button" onclick="removeItem(${index})">${ui('cart_remove')}</button></article>`).join('')}</div><aside class="order-summary"><h2>${ui('cart_order_summary')}</h2><div><span>${ui('cart_subtotal')}</span><strong>$${subtotal.toFixed(2)}</strong></div><div><span>${ui('cart_shipping')}</span><span>${ui('cart_shipping_calc')}</span></div><div class="summary-total"><span>${ui('cart_total')}</span><strong>$${subtotal.toFixed(2)}</strong></div><a class="store-button dark full-width" href="/checkout.html">${ui('cart_checkout')}</a></aside></div>`;
+      document.getElementById('cart-content').innerHTML = `<div class="cart-layout"><div class="cart-items">${cart.map((item, index) => `<article class="cart-item"><img src="${esc(item.image_url || '/images/websiteimage.png')}" alt="${esc(item.name)}"><div class="cart-item-copy"><h2>${esc(item.name)}</h2><p>${window.currency ? window.currency.formatPrice(item.price) : '$' + item.price.toFixed(2)}</p><label>${ui('shop_quantity')} <input type="number" min="1" value="${item.quantity}" onchange="changeQuantity(${index}, this.value)"></label></div><strong>${window.currency ? window.currency.formatPrice(item.price * item.quantity) : '$' + (item.price * item.quantity).toFixed(2)}</strong><button class="remove-button" onclick="removeItem(${index})">${ui('cart_remove')}</button></article>`).join('')}</div><aside class="order-summary"><h2>${ui('cart_order_summary')}</h2><div><span>${ui('cart_subtotal')}</span><strong>${window.currency ? window.currency.formatPrice(subtotal) : '$' + subtotal.toFixed(2)}</strong></div><div><span>${ui('cart_shipping')}</span><span>${ui('cart_shipping_calc')}</span></div><div class="summary-total"><span>${ui('cart_total')}</span><strong>${window.currency ? window.currency.formatPrice(subtotal) : '$' + subtotal.toFixed(2)}</strong></div><a class="store-button dark full-width" href="/checkout.html">${ui('cart_checkout')}</a></aside></div>`;
     }
     function changeQuantity(index, value) { const cart = JSON.parse(localStorage.getItem('shopping_cart') || '[]'); cart[index].quantity = Math.max(1, Number(value) || 1); localStorage.setItem('shopping_cart', JSON.stringify(cart)); renderCart(); }
     function removeItem(index) { const cart = JSON.parse(localStorage.getItem('shopping_cart') || '[]'); cart.splice(index, 1); localStorage.setItem('shopping_cart', JSON.stringify(cart)); renderCart(); }
     window.__i18nOnLanguageChange = renderCart;
+    window.__currencyOnChange = renderCart;
     renderCart();
   </script>
+  <script src="/scripts/theme.js"></script>
+  <script src="/scripts/currency.js"></script>
   <script src="/scripts/i18n.js"></script>
   <script src="/scripts/header-manager.js"></script>
 </body>
