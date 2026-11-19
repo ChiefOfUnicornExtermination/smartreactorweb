@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <link rel="stylesheet" href="/styles/style.css">
-  <title>Smart Device — Sign In</title>
+  <title data-i18n="page_title_signin">Sign In — Smart Device</title>
   <style>
     body.store-page { background: #f7f6f2; }
     .auth-container { max-width: 500px; margin: 80px auto; padding: 0 6vw; }
@@ -26,42 +26,18 @@
     .auth-alert.show { display: block; }
     .auth-alert.error { background: #fce4ec; color: #c2185b; }
     .auth-alert.success { background: #e8f5e9; color: #2e7d32; }
-    #lang-select { padding: 6px 8px; border: 1px solid #d8d8d8; background: #fff; border-radius: 3px; cursor: pointer; }
   </style>
 </head>
 <body class="store-page">
-  <header class="store-header">
-    <a class="store-brand" href="/shop.html">SMART DEVICE</a>
-    <nav class="store-nav" aria-label="Main navigation">
-      <a href="/shop.html" data-i18n="shop_nav_shop">Shop</a>
-      <a href="/about.html" data-i18n="shop_nav_about">About</a>
-      <a href="/contact.html" data-i18n="shop_nav_contact">Contact</a>
-      <a id="devices-nav-link" href="/devices.html" data-i18n="shop_nav_my_devices" style="display:none;">My Devices</a>
-    </nav>
-    <div class="store-actions">
-      <select id="lang-select" aria-label="Language" style="padding:6px 8px;border:1px solid #d8d8d8;background:#fff;border-radius:3px;">
-        <option value="en">English</option>
-        <option value="ja">日本語</option>
-        <option value="es">Español</option>
-        <option value="fr">Français</option>
-        <option value="de">Deutsch</option>
-        <option value="zh-TW">繁體中文</option>
-        <option value="ko">한국어</option>
-      </select>
-      <span id="user-welcome" data-i18n="welcome_text" style="display:none;">Welcome!</span>
-      <button id="toggle-auth-tab" data-i18n="login_tab" style="background:none;border:none;cursor:pointer;color:#17202a;font-weight:600;">Login</button>
-      <button id="logout-btn" data-i18n="logout_btn" style="display:none;background:none;border:none;cursor:pointer;color:#17202a;font-weight:600;">Logout</button>
-      <a id="cart-nav-link" href="/cart.html" class="cart-link" style="display:none;"><span data-i18n="shop_cart">Cart</span> <span id="cart-count">0</span></a>
-    </div>
-  </header>
+  <script src="/scripts/site-header.js"></script>
 
   <main class="auth-container">
     <h1 data-i18n="title">Smart Device</h1>
-    <p data-i18n="subtitle">Control your smart home</p>
+    <p data-i18n="subtitle">Control your light waver</p>
 
     <div class="auth-box">
       <div class="auth-tabs">
-        <button class="auth-tab-btn active" onclick="showTab('login')">Sign In</button>
+        <button class="auth-tab-btn active" onclick="showTab('login')" data-i18n="sign_in_btn">Sign In</button>
         <button class="auth-tab-btn" onclick="showTab('signup')" data-i18n="signup_tab">Sign Up</button>
       </div>
 
@@ -76,7 +52,7 @@
             <label data-i18n="login_password_label">Password</label>
             <input type="password" id="login-password" required autocomplete="current-password">
           </div>
-          <button type="submit" class="auth-button">Sign In</button>
+          <button type="submit" class="auth-button" data-i18n="sign_in_btn">Sign In</button>
           <div id="login-error" class="auth-alert error"></div>
         </form>
       </div>
@@ -97,7 +73,7 @@
             <input type="password" id="signup-confirm" required autocomplete="new-password">
           </div>
           <button type="submit" class="auth-button" data-i18n="create_account_btn">Create Account</button>
-          <button type="button" class="auth-button" onclick="resendVerification()" style="margin-top:10px;background:#596164;">Resend confirmation email</button>
+          <button type="button" class="auth-button" onclick="resendVerification()" style="margin-top:10px;background:#596164;" data-i18n="resend_confirmation">Resend confirmation email</button>
           <div id="signup-error" class="auth-alert error"></div>
           <div id="signup-success" class="auth-alert success"></div>
         </form>
@@ -109,6 +85,7 @@
     const API_URL = ['localhost', '127.0.0.1'].includes(window.location.hostname)
       ? 'http://localhost:8081'
       : 'https://api.unicornextermination.info';
+    const ui = (key) => window.i18n ? window.i18n.t(key) : key;
     if (localStorage.getItem('auth_token')) window.location.href = '/devices.html';
 
     function showTab(name) {
@@ -133,7 +110,7 @@
       try {
         const res  = await fetch(`${API_URL}/auth/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password }) });
         const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Login failed');
+        if (!res.ok) throw new Error(data.error || ui('err_login_failed'));
         localStorage.setItem('auth_token', data.token);
         localStorage.setItem('user_id',    data.user_id);
         localStorage.setItem('user_email', data.email);
@@ -147,11 +124,11 @@
       const email    = document.getElementById('signup-email').value;
       const password = document.getElementById('signup-password').value;
       const confirm  = document.getElementById('signup-confirm').value;
-      if (password !== confirm) { showAlert('signup-error', 'Passwords do not match', 'error'); return; }
+      if (password !== confirm) { showAlert('signup-error', ui('err_password_mismatch'), 'error'); return; }
       try {
         const res  = await fetch(`${API_URL}/auth/signup`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password }) });
         const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Signup failed');
+        if (!res.ok) throw new Error(data.error || ui('err_signup_failed'));
         showAlert('signup-success', '✓ ' + data.message, 'success');
         ['signup-password','signup-confirm'].forEach(id => document.getElementById(id).value = '');
       } catch (err) { showAlert('signup-error', err.message, 'error'); }
@@ -161,7 +138,7 @@
       hideAlert('signup-error'); hideAlert('signup-success');
       const email = document.getElementById('signup-email').value.trim();
       if (!email) {
-        showAlert('signup-error', 'Enter your email address above to resend confirmation.', 'error');
+        showAlert('signup-error', ui('err_enter_email'), 'error');
         return;
       }
 
@@ -172,7 +149,7 @@
           body: JSON.stringify({ email })
         });
         const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Could not resend confirmation email');
+        if (!res.ok) throw new Error(data.error || ui('err_resend_failed'));
         showAlert('signup-success', '✓ ' + data.message, 'success');
       } catch (err) {
         showAlert('signup-error', err.message, 'error');
@@ -181,6 +158,8 @@
 
     showTab('login');
   </script>
+  <script src="/scripts/theme.js"></script>
+  <script src="/scripts/currency.js"></script>
   <script src="/scripts/i18n.js"></script>
   <script src="/scripts/header-manager.js"></script>
 </body>

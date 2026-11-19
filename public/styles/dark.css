@@ -258,3 +258,40 @@ body {
   color: var(--text-primary) !important;
   border-color: var(--input-border) !important;
 }
+
+.header-select { background: var(--bg-secondary); color: var(--text-primary); border-color: var(--border-color); }
+.header-btn, .header-welcome { color: var(--text-primary); }
+
+/* Shared store buttons */
+.store-button { color: var(--text-primary); border-color: var(--text-primary); }
+.store-button.dark { background: var(--text-primary); color: var(--bg-primary); }
+.store-button.light { background: var(--bg-tertiary); color: var(--text-primary); border-color: var(--border-muted); }
+
+/* About page */
+.about-hero, .contact-hero { background: var(--header-bg); }
+.about-hero h1, .contact-hero h1, .about-section h2, .about-card h3,
+.contact-form-section h2, .contact-info h3, .contact-form-group label, .contact-info-item p { color: var(--text-primary); }
+.about-hero p, .contact-hero p, .about-section p, .about-card p { color: var(--text-secondary); }
+.about-section-flush, .contact-info { background: var(--bg-primary); }
+.contact-info { background: var(--card-bg); border: 1px solid var(--border-color); }
+.contact-info-item label { color: var(--text-muted); }
+
+/* Contact page */
+.contact-form-group input, .contact-form-group textarea { background: var(--input-bg); border-color: var(--border-muted); color: var(--text-primary); }
+.contact-submit { background: var(--text-primary); color: var(--bg-primary); }
+.contact-submit:hover { background: #fff; }
+.contact-status.success { background: var(--success-bg); color: var(--success-text); }
+.contact-status.error { background: var(--error-bg); color: var(--error-text); }
+
+/* My Devices page */
+.devices-container > p, .device-form-box p, .empty-devices { color: var(--text-secondary); }
+.devices-section-title, .device-item h3, .device-control-title, .devices-container h1, .device-form-box h3 { color: var(--text-primary); }
+.device-form-box, .device-item, .empty-devices { background: var(--card-bg); border-color: var(--border-color); }
+.device-item .device-id { color: var(--text-muted); }
+.device-status.online { background: var(--success-bg); color: var(--success-text); }
+.device-status.offline { background: var(--badge-offline-bg); color: var(--badge-offline-text); }
+.device-rename input, .device-control input[type="number"], .device-control select { background: var(--input-bg); border: 1px solid var(--border-muted); color: var(--text-primary); }
+.color-swatch.active { border-color: var(--text-primary); }
+.device-status-msg.success { background: var(--success-bg); color: var(--success-text); }
+.device-status-msg.error { background: var(--error-bg); color: var(--error-text); }
+.countdown { color: var(--text-primary); }

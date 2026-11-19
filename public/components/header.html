@@ -1,21 +1,17 @@
 <header class="store-header">
-  <a class="store-brand" href="/shop.html">SMART DEVICE</a>
-  <nav class="store-nav" aria-label="Main navigation">
+  <a class="store-brand" href="/shop.html">Anti Unicorn Equipment</a>
+  <nav class="store-nav" data-i18n-aria-label="aria_main_nav" aria-label="Main navigation">
     <a href="/shop.html" data-i18n="shop_nav_shop">Shop</a>
-    <a href="/devices.html" data-i18n="shop_nav_my_devices">My Devices</a>
     <a href="/about.html" data-i18n="shop_nav_about">About</a>
     <a href="/contact.html" data-i18n="shop_nav_contact">Contact</a>
+    <a id="devices-nav-link" href="/devices.html" data-i18n="shop_nav_my_devices" style="display:none;">My Devices</a>
   </nav>
   <div class="store-actions">
-    <select id="theme-select" aria-label="Theme" style="padding:6px 8px;border:1px solid #d8d8d8;background:#fff;border-radius:3px;">
-      <option value="light">☀️ Light</option>
-      <option value="dark">🌙 Dark</option>
+    <select id="theme-select" class="header-select" data-i18n-aria-label="aria_theme" aria-label="Theme">
+      <option value="light" data-i18n="theme_light">☀️ Light</option>
+      <option value="dark" data-i18n="theme_dark">🌙 Dark</option>
     </select>
-    <select id="currency-select" aria-label="Currency" style="padding:6px 8px;border:1px solid #d8d8d8;background:#fff;border-radius:3px;">
-      <option value="USD">USD ($)</option>
-      <option value="JPY">JPY (¥)</option>
-    </select>
-    <select id="lang-select" aria-label="Language" style="padding:6px 8px;border:1px solid #d8d8d8;background:#fff;border-radius:3px;">
+    <select id="lang-select" class="header-select" data-i18n-aria-label="aria_language" aria-label="Language">
       <option value="en">English</option>
       <option value="ja">日本語</option>
       <option value="es">Español</option>
@@ -24,6 +20,9 @@
       <option value="zh-TW">繁體中文</option>
       <option value="ko">한국어</option>
     </select>
-    <a href="/" class="account-link" data-i18n="shop_nav_account">Account</a>
+    <span id="user-welcome" class="header-welcome" data-i18n="welcome_text" style="display:none;">Welcome!</span>
+    <button id="toggle-auth-tab" class="header-btn" data-i18n="login_tab">Login</button>
+    <button id="logout-btn" class="header-btn" data-i18n="logout_btn" style="display:none;">Logout</button>
+    <a id="cart-nav-link" href="/cart.html" class="cart-link" style="display:none;"><span class="cart-icon" role="img" data-i18n-aria-label="shop_cart" aria-label="Cart"></span><span id="cart-count">0</span></a>
   </div>
 </header>

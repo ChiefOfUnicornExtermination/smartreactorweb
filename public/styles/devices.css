@@ -38,6 +38,7 @@ body.store-page { padding: 0; }
 .empty-devices p { margin-bottom: 8px; }
 .countdown { font-size: 36px; font-weight: 600; color: #17202a; text-align: center; margin: 15px 0; }
 .store-button.sm { padding: 9px 15px; font-size: 13px; }
+.store-button.light { background: #e8e8e8; color: #333; border-color: #e8e8e8; }
 .store-button.success { background: #43a047; color: white; border-color: #43a047; }
 @media (max-width: 800px) {
     .device-grid { grid-template-columns: 1fr; }

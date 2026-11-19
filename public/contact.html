@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <link rel="stylesheet" href="/styles/style.css">
-  <title>Contact — Smart Device</title>
+  <title data-i18n="page_title_contact">Contact — Smart Device</title>
   <style>
     .contact-hero { padding: 80px 6vw; text-align: center; background: #ebe8e2; }
     .contact-hero h1 { font-family: Georgia, "Times New Roman", serif; font-size: clamp(42px, 5vw, 72px); font-weight: 400; margin-bottom: 16px; }
@@ -38,95 +38,72 @@
   </style>
 </head>
 <body class="store-page">
-  <header class="store-header">
-    <a class="store-brand" href="/shop.html">SMART DEVICE</a>
-    <nav class="store-nav" aria-label="Main navigation">
-      <a href="/shop.html" data-i18n="shop_nav_shop">Shop</a>
-      <a href="/about.html" data-i18n="shop_nav_about">About</a>
-      <a href="/contact.html" data-i18n="shop_nav_contact">Contact</a>
-      <a id="devices-nav-link" href="/devices.html" data-i18n="shop_nav_my_devices" style="display:none;">My Devices</a>
-    </nav>
-    <div class="store-actions">
-      <select id="lang-select" aria-label="Language" style="padding:6px 8px;border:1px solid #d8d8d8;background:#fff;border-radius:3px;">
-        <option value="en">English</option>
-        <option value="ja">日本語</option>
-        <option value="es">Español</option>
-        <option value="fr">Français</option>
-        <option value="de">Deutsch</option>
-        <option value="zh-TW">繁體中文</option>
-        <option value="ko">한국어</option>
-      </select>
-      <span id="user-welcome" data-i18n="welcome_text" style="display:none;">Welcome!</span>
-      <button id="toggle-auth-tab" data-i18n="login_tab" style="background:none;border:none;cursor:pointer;color:#17202a;font-weight:600;">Login</button>
-      <button id="logout-btn" data-i18n="logout_btn" style="display:none;background:none;border:none;cursor:pointer;color:#17202a;font-weight:600;">Logout</button>
-      <a id="cart-nav-link" href="/cart.html" class="cart-link" style="display:none;"><span data-i18n="shop_cart">Cart</span> <span id="cart-count">0</span></a>
-    </div>
-  </header>
+  <script src="/scripts/site-header.js"></script>
 
   <section class="contact-hero">
-    <h1>Get in Touch</h1>
-    <p>Have a question or feedback? We'd love to hear from you. Our team is here to help and will get back to you as soon as possible.</p>
+    <h1 data-i18n="contact_title">Get in Touch</h1>
+    <p data-i18n="contact_intro">Have a question or feedback? We would love to hear from you. Our team is here to help and will reply as soon as possible.</p>
   </section>
 
   <main class="contact-container">
     <div class="contact-grid">
       <div class="contact-form-section">
-        <h2>Send us a Message</h2>
+        <h2 data-i18n="contact_form_title">Send Us a Message</h2>
         <form id="contact-form" onsubmit="handleContactForm(event)">
           <div class="contact-form-group">
             <label>
-              <span>Name</span>
+              <span data-i18n="contact_name">Name</span>
               <input type="text" name="name" id="contact-name" required>
             </label>
           </div>
 
           <div class="contact-form-group">
             <label>
-              <span>Email</span>
+              <span data-i18n="contact_email">Email</span>
               <input type="email" name="email" id="contact-email" required>
             </label>
           </div>
 
           <div class="contact-form-group">
             <label>
-              <span>Subject</span>
+              <span data-i18n="contact_subject">Subject</span>
               <input type="text" name="subject" id="contact-subject" required>
             </label>
           </div>
 
           <div class="contact-form-group">
             <label>
-              <span>Message</span>
+              <span data-i18n="contact_message">Message</span>
               <textarea name="message" id="contact-message" required></textarea>
             </label>
           </div>
 
-          <button type="submit" class="contact-submit">Send Message</button>
+          <button type="submit" class="contact-submit" data-i18n="contact_send">Send Message</button>
           <div id="contact-status" class="contact-status"></div>
         </form>
       </div>
 
       <div class="contact-info">
-        <h3>Contact Information</h3>
+        <h3 data-i18n="contact_info_title">Contact Information</h3>
 
         <div class="contact-info-item">
-          <label>Email</label>
-          <p><a href="mailto:support@smartdevice.com" style="color: #17202a; text-decoration: none;">support@smartdevice.com</a></p>
+          <label data-i18n="contact_email">Email</label>
+          <p><a href="mailto:support@unicornextermination.info" style="color: inherit; text-decoration: none;">support@unicornextermination.info</a></p>
         </div>
 
         <div class="contact-info-item">
-          <label>Phone</label>
-          <p><a href="tel:+1-800-SMART-DEVICE" style="color: #17202a; text-decoration: none;">+1 (800) 762-7834</a></p>
+          <label data-i18n="contact_phone">Phone</label>
+          <p><a href="tel:+1-480-788-5198" style="color: inherit; text-decoration: none;">+1(480)788-5198</a></p>
         </div>
 
         <div class="contact-info-item">
-          <label>Business Hours</label>
-          <p>Monday – Friday: 9 AM – 6 PM PST<br>Saturday – Sunday: Closed</p>
+          <label data-i18n="contact_hours">Business Hours</label>
+          <p><span data-i18n="contact_hours_weekdays">Monday – Friday: 9 AM – 6 PM PST</span><br><span data-i18n="contact_hours_weekend">Saturday – Sunday: Closed</span></p>
         </div>
 
         <div class="contact-info-item">
-          <label>Address</label>
-          <p>123 Innovation Drive<br>San Francisco, CA 94105<br>United States</p>
+          <label data-i18n="contact_address">Address</label>
+          <p>1441 E. Buckeye Rd #24204<br>Phoenix, AZ 85034<br><span data-i18n="checkout_country_us">United States</span></p>
         </div>
       </div>
     </div>
@@ -137,6 +114,7 @@
       ? 'http://localhost:8081'
       : 'https://api.unicornextermination.info';
 
+    const ui = (key) => window.i18n ? window.i18n.t(key) : key;
     async function handleContactForm(event) {
       event.preventDefault();
       const statusEl = document.getElementById('contact-status');
@@ -149,13 +127,13 @@
       const message = document.getElementById('contact-message').value.trim();
 
       if (!name || !email || !subject || !message) {
-        statusEl.textContent = 'Please fill in all fields.';
+        statusEl.textContent = ui('err_fill_all');
         statusEl.className = 'contact-status show error';
         return;
       }
 
       submitButton.disabled = true;
-      submitButton.textContent = 'Sending...';
+      submitButton.textContent = ui('contact_sending');
       try {
         const response = await fetch(`${API_URL}/contact`, {
           method: 'POST',
@@ -163,7 +141,7 @@
           body: JSON.stringify({ name, email, subject, message })
         });
         const data = await response.json();
-        if (!response.ok) throw new Error(data.error || 'Could not send your message.');
+        if (!response.ok) throw new Error(data.error || ui('err_contact_send'));
 
         statusEl.textContent = '✓ ' + data.message;
         statusEl.className = 'contact-status show success';
@@ -173,10 +151,12 @@
         statusEl.className = 'contact-status show error';
       } finally {
         submitButton.disabled = false;
-        submitButton.textContent = 'Send Message';
+        submitButton.textContent = ui('contact_send');
       }
     }
   </script>
+  <script src="/scripts/theme.js"></script>
+  <script src="/scripts/currency.js"></script>
   <script src="/scripts/i18n.js"></script>
   <script src="/scripts/header-manager.js"></script>
 </body>

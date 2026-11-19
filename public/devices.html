@@ -6,48 +6,25 @@
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <link rel="stylesheet" href="/styles/style.css">
   <link rel="stylesheet" href="/styles/devices.css">
-  <title>My Devices</title>
+  <title data-i18n="page_title_devices">My Devices — Smart Device</title>
 </head>
 <body class="store-page">
-  <header class="store-header">
-    <a class="store-brand" href="/shop.html">SMART DEVICE</a>
-    <nav class="store-nav" aria-label="Main navigation">
-      <a href="/shop.html" data-i18n="shop_nav_shop">Shop</a>
-      <a href="/about.html" data-i18n="shop_nav_about">About</a>
-      <a href="/contact.html" data-i18n="shop_nav_contact">Contact</a>
-      <a id="devices-nav-link" href="/devices.html" data-i18n="shop_nav_my_devices" style="display:none;">My Devices</a>
-    </nav>
-    <div class="store-actions">
-      <select id="lang-select" aria-label="Language" style="padding:6px 8px;border:1px solid #d8d8d8;background:#fff;border-radius:3px;">
-        <option value="en">English</option>
-        <option value="ja">日本語</option>
-        <option value="es">Español</option>
-        <option value="fr">Français</option>
-        <option value="de">Deutsch</option>
-        <option value="zh-TW">繁體中文</option>
-        <option value="ko">한国어</option>
-      </select>
-      <span id="user-welcome" data-i18n="welcome_text" style="display:none;">Welcome!</span>
-      <button id="toggle-auth-tab" data-i18n="login_tab" style="background:none;border:none;cursor:pointer;color:#17202a;font-weight:600;display:none;">Login</button>
-      <button id="logout-btn" data-i18n="logout_btn" style="display:none;background:none;border:none;cursor:pointer;color:#17202a;font-weight:600;">Logout</button>
-      <a id="cart-nav-link" href="/cart.html" class="cart-link" style="display:none;"><span data-i18n="shop_cart">Cart</span> <span id="cart-count">0</span></a>
-    </div>
-  </header>
+  <script src="/scripts/site-header.js"></script>
 
   <main class="devices-container">
     <h1 data-i18n="device_my_devices">My Devices</h1>
-    <p>Register new devices, manage your smart home, and control settings from one place.</p>
+    <p data-i18n="device_intro">Register new devices, manage your smart home, and control settings from one place.</p>
 
     <!-- Claim Device Section -->
-    <h2>Register A new Device</h2>
+    <h2 data-i18n="device_add_title">Add a New Device</h2>
     <div class="devices-register-area">
       <div class="devices-section">
         <h2 class="devices-section-title" data-i18n="device_claim_title">Claim a Device by Code</h2>
         <div class="device-form-box">
           <div class="device-form-row">
             <div class="form-grid">
-              <label><span>Claim Code</span>
-                <input type="text" id="claim-code" placeholder="e.g. ABC123" maxlength="7" style="text-transform:uppercase;">
+              <label><span data-i18n="device_claim_label">Claim Code</span>
+                <input type="text" id="claim-code" placeholder="e.g. ABC-123" data-i18n-placeholder="claim_placeholder" maxlength="7" style="text-transform:uppercase;">
               </label>
             </div>
             <button class="store-button dark sm" onclick="claimDevice()" data-i18n="device_claim_button">Claim Device</button>
@@ -61,7 +38,7 @@
       <div class="devices-section">
         <h2 class="devices-section-title" data-i18n="device_register_title">📡 Register New Device</h2>
         <div class="device-form-box">
-          <p data-i18n="device_register_desc">Power on your device and connect it to WiFi first, then click below and double-press the BOOT button on the device within the countdown.</p>
+          <p data-i18n="device_register_desc">First, power on your device and connect it to Wi-Fi. Then click below and double-press the BOOT button on the device before the countdown ends.</p>
           <button class="store-button success sm" id="provision-btn" onclick="startProvision()" data-i18n="device_register_button">Start Registration</button>
           <div class="countdown" id="provision-countdown" style="display:none;"></div>
           <div id="provision-status" class="device-status-msg"></div>
@@ -71,7 +48,7 @@
 
     <!-- Devices List -->
     <div class="devices-section">
-      <h2 class="devices-section-title" data-i18n="device_my_devices">Your Devices</h2>
+      <h2 class="devices-section-title" data-i18n="device_list_title">Your Devices</h2>
       <div id="device-list" class="device-grid">
         <div class="empty-devices"><p data-i18n="device_loading">Loading...</p></div>
       </div>
@@ -82,7 +59,17 @@
     const API_URL = ['localhost', '127.0.0.1'].includes(window.location.hostname)
       ? 'http://localhost:8081'
       : 'https://api.unicornextermination.info';
-    const ui = (key) => window.i18n ? window.i18n.t(key) : key;
+    const ui = (key, params) => window.i18n ? window.i18n.t(key, params) : key;
+    // Translates device state words (on/off/running/stopped) and color names; unknown values pass through.
+    function st(value) {
+      for (const prefix of ['state_', 'color_']) {
+        const key = prefix + value;
+        const text = ui(key);
+        if (text !== key) return text;
+      }
+      return value;
+    }
+    let lastDevices = null;
     let token    = localStorage.getItem('auth_token');
 
     if (!token) { window.location.href = '/'; }
@@ -109,7 +96,7 @@
         renderDevices(data.devices || []);
       } catch (err) {
         document.getElementById('device-list').innerHTML =
-          `<div class="empty-devices"><p>Failed to load devices: ${err.message}</p></div>`;
+          `<div class="empty-devices"><p>${ui('device_load_failed')} ${err.message}</p></div>`;
       }
     }
 
@@ -125,9 +112,10 @@
     ];
 
     function renderDevices(devices) {
+      lastDevices = devices;
       const list = document.getElementById('device-list');
       if (!devices.length) {
-        list.innerHTML = '<div class="empty-devices"><p>No devices yet.</p><p>Claim one using the code from your device\'s setup page, or register a new device above.</p></div>';
+        list.innerHTML = '<div class="empty-devices"><p>' + ui('device_none_title') + '</p><p>' + ui('device_none_text') + '</p></div>';
         return;
       }
       list.innerHTML = devices.map(d => `
@@ -137,72 +125,70 @@
               <h3 id="name-${d.id}">${escHtml(d.name)}</h3>
               <div class="device-id">${escHtml(d.id)}</div>
             </div>
-            <span class="device-status ${d.online ? 'online' : 'offline'}">${d.online ? '● Online' : '○ Offline'}</span>
+            <span class="device-status ${d.online ? 'online' : 'offline'}">${d.online ? ui('device_online') : ui('device_offline')}</span>
           </div>
 
           <!-- Rename -->
           <div class="device-rename">
-            <input id="rename-${d.id}" value="${escHtml(d.name)}" placeholder="Device name">
-            <button class="store-button dark sm" onclick="renameDevice('${d.id}')">Rename</button>
+            <input id="rename-${d.id}" value="${escHtml(d.name)}" placeholder="${escHtml(ui('device_name_placeholder'))}">
+            <button class="store-button dark sm" onclick="renameDevice('${d.id}')">${ui('device_rename')}</button>
           </div>
 
           ${d.type === 'crackerpopper' ? '' : `
           <!-- Light -->
           <div class="device-control">
-            <div class="device-control-title">💡 Light — <span id="light-${d.id}">${d.light}</span></div>
+            <div class="device-control-title">💡 ${ui('control_light')} — <span id="light-${d.id}">${st(d.light)}</span></div>
             <div class="device-control-buttons">
-              <button class="store-button dark sm" onclick="sendCmd('${d.id}','light/on',  'light-${d.id}','on')">On</button>
-              <button class="store-button sm" style="background:#e8e8e8;color:#333;" onclick="sendCmd('${d.id}','light/off', 'light-${d.id}','off')">Off</button>
+              <button class="store-button dark sm" onclick="sendCmd('${d.id}','light/on',  'light-${d.id}','on')">${ui('btn_on')}</button>
+              <button class="store-button sm light" onclick="sendCmd('${d.id}','light/off', 'light-${d.id}','off')">${ui('btn_off')}</button>
             </div>
           </div>
 
           <!-- RGB -->
           <div class="device-control">
-            <div class="device-control-title">🌈 RGB — <span id="rgb-${d.id}">${d.rgb}</span></div>
+            <div class="device-control-title">🌈 ${ui('control_rgb')} — <span id="rgb-${d.id}">${st(d.rgb)}</span></div>
+            <div class="device-control-buttons">
+              <button class="store-button dark sm" onclick="setColor('${d.id}','white')">${ui('btn_on')}</button>
+              <button class="store-button sm light" onclick="setColor('${d.id}','off')">${ui('btn_off')}</button>
+            </div>
             <div class="color-palette">
-              ${COLORS.map(c => `<div class="color-swatch ${d.rgb===c.name?'active':''}" style="background:${c.hex};" title="${c.name}" onclick="setColor('${d.id}','${c.name}')"></div>`).join('')}
+              ${COLORS.map(c => `<div class="color-swatch ${d.rgb===c.name?'active':''}" style="background:${c.hex};" data-color="${c.name}" title="${st(c.name)}" onclick="setColor('${d.id}','${c.name}')"></div>`).join('')}
             </div>
           </div>
           `}
 
           <!-- Motor -->
           <div class="device-control">
-            <div class="device-control-title">⚙️ Motor — <span id="motor-${d.id}">${d.motor}</span></div>
+            <div class="device-control-title">⚙️ ${ui('control_motor')} — <span id="motor-${d.id}">${st(d.motor)}</span></div>
             <div class="device-control-buttons">
-              <button class="store-button dark sm" onclick="sendCmd('${d.id}','motor/run',  'motor-${d.id}','running')">Run</button>
-              <button class="store-button sm" style="background:#e8e8e8;color:#333;" onclick="sendCmd('${d.id}','motor/stop', 'motor-${d.id}','stopped')">Stop</button>
+              <button class="store-button dark sm" onclick="sendCmd('${d.id}','motor/run',  'motor-${d.id}','running')">${ui('btn_run')}</button>
+              <button class="store-button sm light" onclick="sendCmd('${d.id}','motor/stop', 'motor-${d.id}','stopped')">${ui('btn_stop')}</button>
             </div>
           </div>
 
           ${d.type === 'crackerpopper' ? '' : `
           <!-- Timed wave -->
           <div class="device-control">
-            <div class="device-control-title">🌊 Timed Wave</div>
+            <div class="device-control-title">🌊 ${ui('control_wave')}</div>
             <div class="form-grid">
-              <label>Color
+              <label>${ui('wave_color')}
                 <select id="wave-color-${d.id}">
-                  <option value="red">Red</option>
-                  <option value="green">Green</option>
-                  <option value="blue">Blue</option>
-                  <option value="white" selected>White</option>
-                  <option value="yellow">Yellow</option>
-                  <option value="cyan">Cyan</option>
-                  <option value="purple">Purple</option>
+                  ${['red','green','blue','white','yellow','cyan','purple'].map(c => `<option value="${c}"${c === 'white' ? ' selected' : ''}>${ui('color_' + c)}</option>`).join('')}
                 </select>
               </label>
-              <label>Brightness: <span id="wave-brightness-value-${d.id}">200</span>
+              <label>${ui('wave_brightness')}: <span id="wave-brightness-value-${d.id}">200</span>
                 <input id="wave-brightness-${d.id}" type="range" min="0" max="255" value="200" oninput="document.getElementById('wave-brightness-value-${d.id}').textContent=this.value">
               </label>
-              <label>Motor speed: <span id="wave-speed-value-${d.id}">100</span>%
+              <label>${ui('wave_speed')}: <span id="wave-speed-value-${d.id}">100</span>%
                 <input id="wave-speed-${d.id}" type="range" min="1" max="100" value="100" oninput="document.getElementById('wave-speed-value-${d.id}').textContent=this.value">
               </label>
-              <label>Duration, seconds (0 = until stopped)
+              <label>${ui('wave_duration')}
                 <input id="wave-duration-${d.id}" type="number" min="0" max="3600" value="10">
               </label>
             </div>
             <div class="device-control-buttons">
-              <button class="store-button dark sm" onclick="startWave('${d.id}')">Start Wave</button>
-              <button class="store-button sm" style="background:#e8e8e8;color:#333;" onclick="stopWave('${d.id}')">Stop Wave</button>
+              <button class="store-button dark sm" onclick="startWave('${d.id}')">${ui('wave_start')}</button>
+              <button class="store-button sm light" onclick="stopWave('${d.id}')">${ui('wave_stop')}</button>
             </div>
           </div>
           `}
@@ -222,10 +208,10 @@
       try {
         const res  = await fetch(`${API_URL}/devices/${deviceId}/${endpoint}`, { method: 'POST', headers: authHeaders() });
         const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Command failed');
+        if (!res.ok) throw new Error(data.error || ui('err_command_failed'));
         const spanEl = document.getElementById(statusSpanId);
-        if (spanEl) spanEl.textContent = expectedVal;
-        statusEl.textContent = '✓ Done';
+        if (spanEl) spanEl.textContent = st(expectedVal);
+        statusEl.textContent = ui('status_done');
         statusEl.className = 'device-status-msg show success';
         setTimeout(() => statusEl.className = 'device-status-msg', 2000);
       } catch (err) {
@@ -236,7 +222,7 @@
 
     async function setColor(deviceId, color) {
       document.querySelectorAll(`#dc-${deviceId} .color-swatch`).forEach(s => s.classList.remove('active'));
-      const clicked = [...document.querySelectorAll(`#dc-${deviceId} .color-swatch`)].find(s => s.title === color);
+      const clicked = [...document.querySelectorAll(`#dc-${deviceId} .color-swatch`)].find(s => s.dataset.color === color);
       if (clicked) clicked.classList.add('active');
 
       const statusEl = document.getElementById('cmd-status-' + deviceId);
@@ -245,10 +231,10 @@
           method: 'POST', headers: authHeaders(), body: JSON.stringify({ color })
         });
         const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Command failed');
+        if (!res.ok) throw new Error(data.error || ui('err_command_failed'));
         const rgbEl = document.getElementById('rgb-' + deviceId);
-        if (rgbEl) rgbEl.textContent = color;
-        statusEl.textContent = '✓ Color set to ' + color;
+        if (rgbEl) rgbEl.textContent = st(color);
+        statusEl.textContent = ui('status_color_set', { color: st(color) });
         statusEl.className = 'device-status-msg show success';
         setTimeout(() => statusEl.className = 'device-status-msg', 2000);
       } catch (err) {
@@ -271,10 +257,10 @@
           body: JSON.stringify({ color, brightness, motorSpeed, durationSeconds })
         });
         const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Wave command failed');
-        document.getElementById('rgb-' + deviceId).textContent = color;
-        document.getElementById('motor-' + deviceId).textContent = 'running';
-        statusEl.textContent = durationSeconds === 0 ? '✓ Wave started until stopped' : `✓ Wave started for ${durationSeconds} seconds`;
+        if (!res.ok) throw new Error(data.error || ui('err_wave_failed'));
+        document.getElementById('rgb-' + deviceId).textContent = st(color);
+        document.getElementById('motor-' + deviceId).textContent = st('running');
+        statusEl.textContent = durationSeconds === 0 ? ui('status_wave_until_stopped') : ui('status_wave_for', { n: durationSeconds });
         statusEl.className = 'device-status-msg show success';
       } catch (err) {
         statusEl.textContent = '✗ ' + err.message;
@@ -290,10 +276,10 @@
           headers: authHeaders()
         });
         const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Wave stop failed');
-        document.getElementById('rgb-' + deviceId).textContent = 'off';
-        document.getElementById('motor-' + deviceId).textContent = 'stopped';
-        statusEl.textContent = '✓ Wave stopped';
+        if (!res.ok) throw new Error(data.error || ui('err_wave_stop_failed'));
+        document.getElementById('rgb-' + deviceId).textContent = st('off');
+        document.getElementById('motor-' + deviceId).textContent = st('stopped');
+        statusEl.textContent = ui('status_wave_stopped');
         statusEl.className = 'device-status-msg show success';
       } catch (err) {
         statusEl.textContent = '✗ ' + err.message;
@@ -310,10 +296,10 @@
           method: 'PATCH', headers: authHeaders(), body: JSON.stringify({ name })
         });
         const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Rename failed');
+        if (!res.ok) throw new Error(data.error || ui('err_rename_failed'));
         document.getElementById('name-' + deviceId).textContent = name;
         const statusEl = document.getElementById('cmd-status-' + deviceId);
-        statusEl.textContent = '✓ Renamed';
+        statusEl.textContent = ui('status_renamed');
         statusEl.className = 'device-status-msg show success';
         setTimeout(() => statusEl.className = 'device-status-msg', 2000);
       } catch (err) {
@@ -326,14 +312,14 @@
     async function claimDevice() {
       hideAlert('claim-error'); hideAlert('claim-success');
       const code = document.getElementById('claim-code').value.replace(/-/g,'').toUpperCase().trim();
-      if (!code) { showAlert('claim-error', 'Enter a claim code', 'error'); return; }
+      if (!code) { showAlert('claim-error', ui('err_claim_code'), 'error'); return; }
       try {
         const res  = await fetch(`${API_URL}/devices/claim`, {
           method: 'POST', headers: authHeaders(), body: JSON.stringify({ claim_code: code })
         });
         const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Claim failed');
-        showAlert('claim-success', '✓ Device claimed! Loading...', 'success');
+        if (!res.ok) throw new Error(data.error || ui('err_claim_failed'));
+        showAlert('claim-success', ui('status_claimed'), 'success');
         document.getElementById('claim-code').value = '';
         setTimeout(() => loadDevices(), 1000);
       } catch (err) { showAlert('claim-error', err.message, 'error'); }
@@ -353,13 +339,13 @@
           method: 'POST', headers: authHeaders(), body: JSON.stringify({ ttl: 10 })
         });
         const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Failed to start session');
+        if (!res.ok) throw new Error(data.error || ui('err_provision_failed'));
 
         provisionSessionId = data.session_id;
         let remaining = data.ttl_seconds;
         countdown.textContent = remaining;
         countdown.style.display = 'block';
-        status.textContent = '⏳ Waiting… double-press BOOT on your device now!';
+        status.textContent = ui('status_waiting');
         status.className = 'device-status-msg show error';
 
         provisionTimer = setInterval(() => {
@@ -370,7 +356,7 @@
             clearInterval(provisionPollTimer);
             countdown.style.display = 'none'; btn.disabled = false;
             if (status.className.includes('error')) {
-              status.textContent = '⏰ Time expired — device did not respond. Try again.';
+              status.textContent = ui('status_expired');
               status.className = 'device-status-msg show error';
             }
           }
@@ -384,7 +370,7 @@
             if (pollData.status === 'claimed') {
               clearInterval(provisionTimer); clearInterval(provisionPollTimer);
               countdown.style.display = 'none'; btn.disabled = false;
-              status.textContent = `✅ Device registered: ${pollData.claimed_device_id}`;
+              status.textContent = ui('status_registered', { id: pollData.claimed_device_id });
               status.className = 'device-status-msg show success';
               setTimeout(() => loadDevices(), 1000);
             }
@@ -398,9 +384,12 @@
       }
     }
 
+    window.__i18nOnLanguageChange = function() { if (lastDevices) renderDevices(lastDevices); };
     loadDevices();
     setInterval(loadDevices, 10000);
   </script>
+  <script src="/scripts/theme.js"></script>
+  <script src="/scripts/currency.js"></script>
   <script src="/scripts/i18n.js"></script>
   <script src="/scripts/header-manager.js"></script>
 </body>
